@@ -3,6 +3,9 @@ import httpx
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 
+# Configuration cache to reduce API calls
+_config_cache = {}
+
 async def get_sales_config_from_superadmin(key: str, organization_id: Optional[int] = None) -> Any:
     """
     Get a sales configuration value by key from the super admin service.
@@ -14,15 +17,26 @@ async def get_sales_config_from_superadmin(key: str, organization_id: Optional[i
     Returns:
         The configuration value
     """
+    # Create a cache key
+    cache_key = f"{key}:{organization_id}" if organization_id else key
+    
+    # Check if we have a cached value
+    if cache_key in _config_cache:
+        return _config_cache[cache_key]
+    
     try:
         # Make actual HTTP request to super admin API
         async with httpx.AsyncClient() as client:
             url = f"http://superadmin-service/api/v1/sales-config/key/{key}"
             params = {"organization_id": organization_id} if organization_id else {}
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params, timeout=10.0)
             response.raise_for_status()
             config = response.json()
-            return json.loads(config["value"])
+            value = json.loads(config["value"])
+            
+            # Cache the value
+            _config_cache[cache_key] = value
+            return value
     except httpx.RequestError as e:
         # Log the error and return default values
         print(f"Error connecting to super admin API: {e}")
@@ -36,7 +50,13 @@ async def get_sales_config_from_superadmin(key: str, organization_id: Optional[i
             "default_tax_rate": 0.0,
             "closed_won_stage": "Closed Won",
             "forecast_factors": ["Market growth", "New product launch", "Seasonal trends", "Economic conditions", "Competitor activity", "Historical trends"],
-            "target_periods": ["Q1", "Q2", "Q3", "Q4", "H1", "H2", "Annual", "Monthly"]
+            "target_periods": ["Q1", "Q2", "Q3", "Q4", "H1", "H2", "Annual", "Monthly"],
+            "contact_types": ["Primary", "Secondary", "Billing", "Shipping"],
+            "activity_types": ["Call", "Meeting", "Email", "Task", "Note", "Deadline"],
+            "activity_statuses": ["Pending", "Completed", "Cancelled"],
+            "report_types": ["Sales Performance", "Pipeline Analysis", "Revenue Forecast", "Activity Summary", "Quota Attainment"],
+            "report_statuses": ["Draft", "Generated", "Published", "Archived"],
+            "target_types": ["Revenue", "Leads", "Opportunities", "Conversions"]
         }
         
         return defaults.get(key, None)
@@ -53,10 +73,25 @@ async def get_sales_config_from_superadmin(key: str, organization_id: Optional[i
             "default_tax_rate": 0.0,
             "closed_won_stage": "Closed Won",
             "forecast_factors": ["Market growth", "New product launch", "Seasonal trends", "Economic conditions", "Competitor activity", "Historical trends"],
-            "target_periods": ["Q1", "Q2", "Q3", "Q4", "H1", "H2", "Annual", "Monthly"]
+            "target_periods": ["Q1", "Q2", "Q3", "Q4", "H1", "H2", "Annual", "Monthly"],
+            "contact_types": ["Primary", "Secondary", "Billing", "Shipping"],
+            "activity_types": ["Call", "Meeting", "Email", "Task", "Note", "Deadline"],
+            "activity_statuses": ["Pending", "Completed", "Cancelled"],
+            "report_types": ["Sales Performance", "Pipeline Analysis", "Revenue Forecast", "Activity Summary", "Quota Attainment"],
+            "report_statuses": ["Draft", "Generated", "Published", "Archived"],
+            "target_types": ["Revenue", "Leads", "Opportunities", "Conversions"]
         }
         
         return defaults.get(key, None)
+
+def clear_config_cache():
+    """Clear the configuration cache"""
+    global _config_cache
+    _config_cache.clear()
+
+async def refresh_config_cache():
+    """Refresh the configuration cache by clearing it"""
+    clear_config_cache()
 
 def get_sales_config(key: str, organization_id: Optional[int] = None) -> Any:
     """
@@ -114,3 +149,27 @@ def get_forecast_factors(organization_id: Optional[int] = None) -> List[str]:
 def get_target_periods(organization_id: Optional[int] = None) -> List[str]:
     """Get available target periods"""
     return get_sales_config("target_periods", organization_id)
+
+def get_contact_types(organization_id: Optional[int] = None) -> List[str]:
+    """Get available contact types"""
+    return get_sales_config("contact_types", organization_id)
+
+def get_activity_types(organization_id: Optional[int] = None) -> List[str]:
+    """Get available activity types"""
+    return get_sales_config("activity_types", organization_id)
+
+def get_activity_statuses(organization_id: Optional[int] = None) -> List[str]:
+    """Get available activity statuses"""
+    return get_sales_config("activity_statuses", organization_id)
+
+def get_report_types(organization_id: Optional[int] = None) -> List[str]:
+    """Get available report types"""
+    return get_sales_config("report_types", organization_id)
+
+def get_report_statuses(organization_id: Optional[int] = None) -> List[str]:
+    """Get available report statuses"""
+    return get_sales_config("report_statuses", organization_id)
+
+def get_target_types(organization_id: Optional[int] = None) -> List[str]:
+    """Get available target types"""
+    return get_sales_config("target_types", organization_id)

@@ -8,15 +8,13 @@ from .report import router as report_router
 from .target import router as target_router
 
 router = APIRouter()
-
-# Include all sub-routers
-router.include_router(activity_router)
-router.include_router(contact_router)
-router.include_router(lead_router)
-router.include_router(opportunity_router)
-router.include_router(quotation_router)
-router.include_router(report_router)
-router.include_router(target_router)
+router.include_router(activity_router, prefix="/activity", tags=["activity"])
+router.include_router(contact_router, prefix="/contact", tags=["contact"])
+router.include_router(lead_router, prefix="/lead", tags=["lead"])
+router.include_router(opportunity_router, prefix="/opportunity", tags=["opportunity"])
+router.include_router(quotation_router, prefix="/quotation", tags=["quotation"])
+router.include_router(report_router, prefix="/report", tags=["report"])
+router.include_router(target_router, prefix="/target", tags=["target"])
 
 @router.get("/")
 def get_sales_dashboard():
