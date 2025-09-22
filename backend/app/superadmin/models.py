@@ -191,3 +191,37 @@ class MarketingConfig(MarketingConfigBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
+
+# Authentication Models
+class AuthToken(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    scope: Optional[str] = None
+
+class TokenData(BaseModel):
+    user_id: Optional[int] = None
+    email: Optional[str] = None
+    scopes: List[str] = []
+
+class DeviceInfo(BaseModel):
+    device_id: str
+    user_agent: str
+    ip_address: str
+    location: Optional[str] = None
+    last_seen: datetime
+
+class MFACode(BaseModel):
+    user_id: int
+    code: str
+    expires_at: datetime
+    used: bool = False
+
+class WebAuthnCredential(BaseModel):
+    id: str
+    user_id: int
+    public_key: str
+    sign_count: int
+    device_name: str
+    created_at: datetime

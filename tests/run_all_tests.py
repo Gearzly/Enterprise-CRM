@@ -37,6 +37,7 @@ def main():
         "test_sales.py",
         "test_marketing.py",
         "test_support.py",
+        "test_auth.py",  # New authentication tests
         "test_integration.py"
     ]
     

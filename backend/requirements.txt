@@ -1,4 +1,9 @@
-fastapi
-uvicorn
-pydantic
-requests
+fastapi>=0.68.0
+uvicorn>=0.15.0
+pydantic>=1.8.0
+httpx>=0.18.0
+python-jose>=3.3.0
+passlib>=1.7.4
+python-multipart>=0.0.5
+cryptography>=3.4.8
+pyjwt>=2.1.0
