@@ -1,15 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class OpportunityStage(str, Enum):
-    prospecting = "Prospecting"
-    qualification = "Qualification"
-    proposal = "Proposal"
-    negotiation = "Negotiation"
-    closed_won = "Closed Won"
-    closed_lost = "Closed Lost"
+# Import enums from the shared enums file
+from app.models.enums import OpportunityStage
 
 class OpportunityBase(BaseModel):
     name: str

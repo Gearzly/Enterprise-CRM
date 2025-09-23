@@ -1,20 +1,15 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class ContactType(str, Enum):
-    primary = "Primary"
-    secondary = "Secondary"
-    billing = "Billing"
-    shipping = "Shipping"
+# Import enums from the shared enums file
+from app.models.enums import ContactType
 
 class ContactBase(BaseModel):
     first_name: str
     last_name: str
-    email: str
+    email: Optional[str] = None
     phone: Optional[str] = None
-    company: str
+    company: Optional[str] = None
     position: Optional[str] = None
     department: Optional[str] = None
     address: Optional[str] = None

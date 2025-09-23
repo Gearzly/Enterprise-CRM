@@ -3,6 +3,10 @@ from app.sales import router as sales_router
 from app.marketing import router as marketing_router
 from app.support import router as support_router
 from app.superadmin import router as superadmin_router
+from app.core.database import Base, engine
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="SaaS CRM Backend", version="1.0.0")
 

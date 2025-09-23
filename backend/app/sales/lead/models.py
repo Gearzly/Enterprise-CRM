@@ -1,22 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class LeadStatus(str, Enum):
-    new = "New"
-    contacted = "Contacted"
-    qualified = "Qualified"
-    unqualified = "Unqualified"
-    converted = "Converted"
-
-class LeadSource(str, Enum):
-    website = "Website"
-    referral = "Referral"
-    social_media = "Social Media"
-    email_campaign = "Email Campaign"
-    event = "Event"
-    other = "Other"
+# Import enums from the shared enums file
+from app.models.enums import LeadStatus, LeadSource
 
 class LeadBase(BaseModel):
     name: str

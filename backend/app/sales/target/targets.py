@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from .models import (
     Target, TargetCreate, TargetUpdate, TargetType, TargetPeriod
@@ -8,6 +9,8 @@ from .models import (
 from .config import (
     get_target_periods, get_target_types
 )
+from app.core.deps import get_db
+from app.core.crud import target as crud_target
 
 router = APIRouter()
 
@@ -17,32 +20,7 @@ class SalesForecast(BaseModel):
     confidence: float  # 0-100
     factors: List[str]
 
-# In-memory storage for demo purposes
-targets_db = [
-    Target(
-        id=1,
-        name="Q1 2025 Sales Target",
-        description="First quarter sales target for enterprise division",
-        target_type=TargetType.revenue,
-        period=TargetPeriod.q1,
-        year=2025,
-        target_value=500000.0,
-        assigned_to="John Sales",
-        created_at=datetime.now()
-    ),
-    Target(
-        id=2,
-        name="Annual Sales Target",
-        description="Annual sales target for the entire sales team",
-        target_type=TargetType.revenue,
-        period=TargetPeriod.annual,
-        year=2025,
-        target_value=2000000.0,
-        assigned_to="Sales Team",
-        created_at=datetime.now()
-    )
-]
-
+# In-memory storage for forecasts (these don't need to be in the database for now)
 forecasts_db = [
     SalesForecast(
         period="Q1 2025",
@@ -59,80 +37,71 @@ forecasts_db = [
 ]
 
 @router.get("/", response_model=List[Target])
-def list_targets():
-    return targets_db
+def list_targets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """List all targets"""
+    targets = crud_target.get_multi(db, skip=skip, limit=limit)
+    return targets
 
 @router.get("/{target_id}", response_model=Target)
-def get_target(target_id: int):
-    for target in targets_db:
-        if target.id == target_id:
-            return target
-    raise HTTPException(status_code=404, detail="Sales target not found")
+def get_target(target_id: int, db: Session = Depends(get_db)):
+    """Get a specific target by ID"""
+    db_target = crud_target.get(db, id=target_id)
+    if db_target is None:
+        raise HTTPException(status_code=404, detail="Sales target not found")
+    return db_target
 
 @router.post("/", response_model=Target)
-def create_target(target: TargetCreate):
-    new_id = max([t.id for t in targets_db]) + 1 if targets_db else 1
-    new_target = Target(
-        id=new_id,
-        created_at=datetime.now(),
-        **target.dict()
-    )
-    targets_db.append(new_target)
-    return new_target
+def create_target(target: TargetCreate, db: Session = Depends(get_db)):
+    """Create a new target"""
+    return crud_target.create(db, obj_in=target)
 
 @router.put("/{target_id}", response_model=Target)
-def update_target(target_id: int, target_update: TargetUpdate):
-    for index, target in enumerate(targets_db):
-        if target.id == target_id:
-            updated_target = Target(
-                id=target_id,
-                created_at=target.created_at,
-                updated_at=datetime.now(),
-                **target_update.dict()
-            )
-            targets_db[index] = updated_target
-            return updated_target
-    raise HTTPException(status_code=404, detail="Sales target not found")
+def update_target(target_id: int, target_update: TargetUpdate, db: Session = Depends(get_db)):
+    """Update an existing target"""
+    db_target = crud_target.get(db, id=target_id)
+    if db_target is None:
+        raise HTTPException(status_code=404, detail="Sales target not found")
+    return crud_target.update(db, db_obj=db_target, obj_in=target_update)
 
 @router.delete("/{target_id}")
-def delete_target(target_id: int):
-    for index, target in enumerate(targets_db):
-        if target.id == target_id:
-            del targets_db[index]
-            return {"message": "Sales target deleted successfully"}
-    raise HTTPException(status_code=404, detail="Sales target not found")
+def delete_target(target_id: int, db: Session = Depends(get_db)):
+    """Delete a target"""
+    db_target = crud_target.get(db, id=target_id)
+    if db_target is None:
+        raise HTTPException(status_code=404, detail="Sales target not found")
+    crud_target.remove(db, id=target_id)
+    return {"message": "Sales target deleted successfully"}
 
 @router.get("/period/{period}", response_model=List[Target])
-def get_targets_by_period(period: str):
+def get_targets_by_period(period: str, db: Session = Depends(get_db)):
     """Get targets by period"""
-    return [target for target in targets_db if target.period.value.lower() == period.lower()]
+    return crud_target.get_by_period(db, period=period)
 
 @router.get("/type/{target_type}", response_model=List[Target])
-def get_targets_by_type(target_type: str):
+def get_targets_by_type(target_type: str, db: Session = Depends(get_db)):
     """Get targets by type"""
-    return [target for target in targets_db if target.target_type.value.lower() == target_type.lower()]
+    return crud_target.get_by_type(db, target_type=target_type)
 
 @router.get("/year/{year}", response_model=List[Target])
-def get_targets_by_year(year: int):
+def get_targets_by_year(year: int, db: Session = Depends(get_db)):
     """Get targets by year"""
-    return [target for target in targets_db if target.year == year]
+    return crud_target.get_by_year(db, year=year)
 
 @router.get("/assigned/{assigned_to}", response_model=List[Target])
-def get_targets_by_assignee(assigned_to: str):
+def get_targets_by_assignee(assigned_to: str, db: Session = Depends(get_db)):
     """Get targets by assignee"""
-    return [target for target in targets_db if target.assigned_to and target.assigned_to.lower() == assigned_to.lower()]
+    return crud_target.get_by_assigned_to(db, assigned_to=assigned_to)
 
 @router.get("/value/{min_value}/{max_value}", response_model=List[Target])
-def get_targets_by_value_range(min_value: float, max_value: float):
+def get_targets_by_value_range(min_value: float, max_value: float, db: Session = Depends(get_db)):
     """Get targets by value range"""
-    return [target for target in targets_db if min_value <= target.target_value <= max_value]
+    return crud_target.get_multi_by_value_range(db, min_value=min_value, max_value=max_value)
 
 @router.get("/upcoming", response_model=List[Target])
-def get_upcoming_targets():
+def get_upcoming_targets(db: Session = Depends(get_db)):
     """Get upcoming targets for the current and next year"""
-    from datetime import datetime
     current_year = datetime.now().year
-    return [target for target in targets_db if target.year >= current_year]
+    return crud_target.get_by_year(db, year=current_year)
 
 @router.get("/forecasts", response_model=List[SalesForecast])
 def list_forecasts():

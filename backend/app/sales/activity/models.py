@@ -1,20 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class ActivityType(str, Enum):
-    call = "Call"
-    meeting = "Meeting"
-    email = "Email"
-    task = "Task"
-    note = "Note"
-    deadline = "Deadline"
-
-class ActivityStatus(str, Enum):
-    pending = "Pending"
-    completed = "Completed"
-    cancelled = "Cancelled"
+# Import enums from the shared enums file
+from app.models.enums import ActivityType, ActivityStatus
 
 class ActivityBase(BaseModel):
     title: str

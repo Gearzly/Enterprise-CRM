@@ -1,20 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class ReportType(str, Enum):
-    sales_performance = "Sales Performance"
-    pipeline_analysis = "Pipeline Analysis"
-    revenue_forecast = "Revenue Forecast"
-    activity_summary = "Activity Summary"
-    quota_attainment = "Quota Attainment"
-
-class ReportStatus(str, Enum):
-    draft = "Draft"
-    generated = "Generated"
-    published = "Published"
-    archived = "Archived"
+# Import enums from the shared enums file
+from app.models.enums import ReportType, ReportStatus
 
 class ReportBase(BaseModel):
     title: str

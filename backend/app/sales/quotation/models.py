@@ -1,15 +1,8 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class QuotationStatus(str, Enum):
-    draft = "Draft"
-    sent = "Sent"
-    viewed = "Viewed"
-    accepted = "Accepted"
-    rejected = "Rejected"
-    expired = "Expired"
+# Import enums from the shared enums file
+from app.models.enums import QuotationStatus
 
 class QuotationBase(BaseModel):
     title: str
