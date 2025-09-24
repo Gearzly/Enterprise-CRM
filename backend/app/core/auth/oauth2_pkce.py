@@ -15,6 +15,7 @@ import secrets
 import hashlib
 import base64
 import time
+import json
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
@@ -289,7 +290,7 @@ class OAuth2PKCEManager:
         }
         
         # Encrypt token payload
-        encrypted_payload = self.cipher.encrypt(str(token_data).encode())
+        encrypted_payload = self.cipher.encrypt(json.dumps(token_data).encode())
         access_token = base64.urlsafe_b64encode(encrypted_payload).decode()
         
         # Store token metadata
@@ -334,7 +335,7 @@ class OAuth2PKCEManager:
             try:
                 encrypted_payload = base64.urlsafe_b64decode(token.encode())
                 decrypted_data = self.cipher.decrypt(encrypted_payload)
-                token_data = eval(decrypted_data.decode())  # In production, use JSON
+                token_data = json.loads(decrypted_data.decode())
                 
                 return {
                     "client_id": token_metadata.client_id,

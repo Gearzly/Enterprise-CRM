@@ -20,7 +20,7 @@ from starlette.responses import Response
 
 from .oauth2_pkce import oauth2_manager
 from ...superadmin.models import User
-from ...superadmin.security.auth import get_user_by_email
+from ..services.user_service import user_service
 
 logger = logging.getLogger(__name__)
 
@@ -225,8 +225,8 @@ class OAuth2AuthenticationMiddleware(BaseHTTPMiddleware):
                 detail="Invalid token: missing user ID"
             )
         
-        # Get user by email from the auth module
-        user = get_user_by_email(user_id)
+        # Get user by email from the user service
+        user = user_service.get_user_by_email(user_id)
         
         if not user:
             raise HTTPException(
