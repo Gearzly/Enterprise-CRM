@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     MarketingMetric, MarketingMetricCreate, MarketingMetricUpdate,
     Report, ReportCreate, ReportUpdate,
@@ -15,7 +15,7 @@ from .config import (
     get_default_conversion_rate, get_default_customer_lifetime_value
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 # In-memory storage for demo purposes
 marketing_metrics_db = []
@@ -23,6 +23,20 @@ reports_db = []
 dashboards_db = []
 conversion_trackings_db = []
 attribution_models_db = []
+
+@router.get("/")
+def get_analytics_dashboard():
+    """Get marketing analytics dashboard with summary statistics"""
+    return {
+        "message": "Marketing Analytics Dashboard",
+        "statistics": {
+            "total_metrics": len(marketing_metrics_db),
+            "total_reports": len(reports_db),
+            "total_dashboards": len(dashboards_db),
+            "total_conversion_trackings": len(conversion_trackings_db),
+            "total_attribution_models": len(attribution_models_db)
+        }
+    }
 
 @router.get("/metrics", response_model=List[MarketingMetric])
 def list_marketing_metrics():
@@ -146,7 +160,9 @@ def generate_report(report_id: int):
 @router.get("/reports/type/{report_type}", response_model=List[Report])
 def get_reports_by_type(report_type: str):
     """Get reports by type"""
-    return [report for report in reports_db if report.report_type.value == report_type]
+    # Normalize the report_type parameter to handle case differences
+    normalized_type = report_type.lower().title()
+    return [report for report in reports_db if report.report_type == normalized_type]
 
 # Dashboards endpoints
 @router.get("/dashboards", response_model=List[Dashboard])

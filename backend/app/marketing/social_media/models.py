@@ -1,36 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class SocialPlatform(str, Enum):
-    facebook = "Facebook"
-    twitter = "Twitter"
-    linkedin = "LinkedIn"
-    instagram = "Instagram"
-    youtube = "YouTube"
-    tiktok = "TikTok"
-    pinterest = "Pinterest"
-    other = "Other"
-
-class PostStatus(str, Enum):
-    draft = "Draft"
-    scheduled = "Scheduled"
-    published = "Published"
-    failed = "Failed"
-
-class EngagementType(str, Enum):
-    like = "Like"
-    share = "Share"
-    comment = "Comment"
-    view = "View"
-    click = "Click"
 
 class SocialPostBase(BaseModel):
-    platform: SocialPlatform
+    platform: str
     content: str
     media_urls: List[str] = []
-    status: PostStatus = PostStatus.draft
+    status: str = "Draft"
     scheduled_at: Optional[datetime] = None
     published_at: Optional[datetime] = None
     tags: List[str] = []
@@ -53,7 +29,7 @@ class SocialPost(SocialPostBase):
 
 class SocialListeningKeywordBase(BaseModel):
     keyword: str
-    platform: SocialPlatform
+    platform: str
     is_active: bool = True
 
 class SocialListeningKeywordCreate(SocialListeningKeywordBase):
@@ -70,7 +46,7 @@ class SocialListeningKeyword(SocialListeningKeywordBase):
 
 class SocialMentionBase(BaseModel):
     keyword_id: int
-    platform: SocialPlatform
+    platform: str
     post_id: str  # Platform-specific post ID
     content: str
     author: str
@@ -92,7 +68,7 @@ class SocialMention(SocialMentionBase):
 
 class SocialEngagementBase(BaseModel):
     post_id: int
-    engagement_type: EngagementType
+    engagement_type: str
     user_id: Optional[str] = None
     timestamp: datetime
 
@@ -107,7 +83,7 @@ class SocialEngagement(SocialEngagementBase):
 
 class InfluencerBase(BaseModel):
     name: str
-    platform: SocialPlatform
+    platform: str
     profile_url: str
     followers_count: int
     engagement_rate: float

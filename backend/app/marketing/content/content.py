@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
 from .models import (
     ContentAsset, ContentAssetCreate, ContentAssetUpdate,
     ContentPersonalization, ContentPersonalizationCreate, ContentPersonalizationUpdate,
@@ -13,12 +13,24 @@ from .config import (
     get_default_view_count, get_default_engagement_score
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/content", tags=["content"])
 
 # In-memory storage for demo purposes
 content_assets_db = []
 content_personalizations_db = []
 blog_posts_db = []
+
+@router.get("/")
+def get_content_dashboard():
+    """Get content marketing dashboard with summary statistics"""
+    return {
+        "message": "Content Marketing Dashboard",
+        "statistics": {
+            "total_assets": len(content_assets_db),
+            "total_personalizations": len(content_personalizations_db),
+            "total_blog_posts": len(blog_posts_db)
+        }
+    }
 
 @router.get("/assets", response_model=List[ContentAsset])
 def list_content_assets():
@@ -79,21 +91,21 @@ def get_content_assets_by_status(status: str):
     """Get content assets by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [asset for asset in content_assets_db if asset.status.value == normalized_status]
+    return [asset for asset in content_assets_db if asset.status == normalized_status]
 
 @router.get("/assets/type/{content_type}", response_model=List[ContentAsset])
 def get_content_assets_by_type(content_type: str):
     """Get content assets by type"""
     # Normalize the content_type parameter to handle case differences
     normalized_type = content_type.lower().title()
-    return [asset for asset in content_assets_db if asset.content_type.value == normalized_type]
+    return [asset for asset in content_assets_db if asset.content_type == normalized_type]
 
 @router.get("/assets/category/{category}", response_model=List[ContentAsset])
 def get_content_assets_by_category(category: str):
     """Get content assets by category"""
     # Normalize the category parameter to handle case differences
     normalized_category = category.lower().title()
-    return [asset for asset in content_assets_db if asset.category.value == normalized_category]
+    return [asset for asset in content_assets_db if asset.category == normalized_category]
 
 # Content Personalization endpoints
 @router.get("/personalizations", response_model=List[ContentPersonalization])
@@ -215,7 +227,7 @@ def get_blog_posts_by_status(status: str):
     """Get blog posts by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [post for post in blog_posts_db if post.status.value == normalized_status]
+    return [post for post in blog_posts_db if post.status == normalized_status]
 
 # Configuration endpoints
 @router.get("/config/statuses", response_model=List[str])

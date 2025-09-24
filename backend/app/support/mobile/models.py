@@ -1,27 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class MobileDeviceType(str, Enum):
-    ios = "iOS"
-    android = "Android"
-    windows_phone = "Windows Phone"
-
-class MobileAppType(str, Enum):
-    customer = "Customer"
-    agent = "Agent"
-
-class MobileTicketStatus(str, Enum):
-    offline_created = "Offline Created"
-    synced = "Synced"
-    pending_sync = "Pending Sync"
 
 class MobileDeviceBase(BaseModel):
     device_id: str
     user_id: int
-    device_type: MobileDeviceType
-    app_type: MobileAppType
+    device_type: str
+    app_type: str
     os_version: str
     app_version: str
     is_active: bool = True
@@ -44,7 +29,7 @@ class MobileTicketBase(BaseModel):
     subject: str
     description: str
     priority: str
-    status: MobileTicketStatus = MobileTicketStatus.offline_created
+    status: str = "Offline Created"
     location: Optional[str] = None
     offline_data: Optional[str] = None
 

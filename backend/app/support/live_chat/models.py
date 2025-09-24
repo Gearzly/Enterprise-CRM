@@ -1,23 +1,15 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class ChatStatus(str, Enum):
-    pending = "Pending"
-    active = "Active"
-    closed = "Closed"
-    transferred = "Transferred"
-
-class ChatPriority(str, Enum):
-    low = "Low"
-    medium = "Medium"
-    high = "High"
+# Removed ChatStatus enum
+# Removed ChatPriority enum
 
 class ChatSessionBase(BaseModel):
     customer_id: int
     subject: str
-    priority: ChatPriority = ChatPriority.medium
+    priority: str = "Medium"  # Changed from ChatPriority to str
     assigned_agent_id: Optional[str] = None
     tags: List[str] = []
 
@@ -29,7 +21,7 @@ class ChatSessionUpdate(ChatSessionBase):
 
 class ChatSession(ChatSessionBase):
     id: int
-    status: ChatStatus = ChatStatus.pending
+    status: str = "Pending"  # Changed from ChatStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     accepted_at: Optional[datetime] = None

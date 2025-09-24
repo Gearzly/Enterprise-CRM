@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -12,14 +12,27 @@ from .config import (
     get_default_asset_type, get_default_asset_status, get_maintenance_reminder_days
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/asset", tags=["asset"])
 
 # In-memory storage for demo purposes
 assets_db = []
 warranties_db = []
 maintenance_db = []
 
-@router.get("/", response_model=List[Asset])
+@router.get("/")
+def get_asset_dashboard():
+    """Get support asset dashboard with summary statistics"""
+    return {
+        "message": "Support Asset Dashboard",
+        "statistics": {
+            "total_assets": len(assets_db),
+            "total_warranties": len(warranties_db),
+            "total_maintenance": len(maintenance_db),
+            "active_assets": len([a for a in assets_db if a.status != "Retired"])
+        }
+    }
+
+@router.get("/asset", response_model=List[Asset])
 def list_assets():
     """List all assets"""
     return assets_db
@@ -78,14 +91,14 @@ def get_assets_by_type(type: str):
     """Get assets by type"""
     # Normalize the type parameter to handle case differences
     normalized_type = type.lower().title()
-    return [asset for asset in assets_db if asset.type.value == normalized_type]
+    return [asset for asset in assets_db if asset.type == normalized_type]
 
 @router.get("/status/{status}", response_model=List[Asset])
 def get_assets_by_status(status: str):
     """Get assets by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [asset for asset in assets_db if asset.status.value == normalized_status]
+    return [asset for asset in assets_db if asset.status == normalized_status]
 
 @router.post("/{asset_id}/assign")
 def assign_asset(asset_id: int, customer_id: int):
@@ -160,7 +173,7 @@ def get_warranties_by_status(status: str):
     """Get warranties by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [warranty for warranty in warranties_db if warranty.status.value == normalized_status]
+    return [warranty for warranty in warranties_db if warranty.status == normalized_status]
 
 @router.get("/assets/{asset_id}/warranty", response_model=Warranty)
 def get_warranty_for_asset(asset_id: int):

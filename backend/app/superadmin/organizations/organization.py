@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from datetime import datetime
 from ..models import Organization, OrganizationCreate, OrganizationUpdate

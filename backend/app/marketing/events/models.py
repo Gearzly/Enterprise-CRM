@@ -1,32 +1,12 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class EventStatus(str, Enum):
-    draft = "Draft"
-    planned = "Planned"
-    registration_open = "Registration Open"
-    upcoming = "Upcoming"
-    ongoing = "Ongoing"
-    completed = "Completed"
-    cancelled = "Cancelled"
-
-class EventType(str, Enum):
-    webinar = "Webinar"
-    conference = "Conference"
-    trade_show = "Trade Show"
-    workshop = "Workshop"
-    networking = "Networking Event"
-    product_launch = "Product Launch"
-    virtual_event = "Virtual Event"
-    other = "Other"
 
 class EventBase(BaseModel):
     name: str
     description: Optional[str] = None
-    event_type: EventType
-    status: EventStatus = EventStatus.draft
+    event_type: str
+    status: str = "Draft"
     start_date: datetime
     end_date: datetime
     location: Optional[str] = None

@@ -1,35 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class CampaignStatus(str, Enum):
-    draft = "Draft"
-    scheduled = "Scheduled"
-    active = "Active"
-    paused = "Paused"
-    completed = "Completed"
-    cancelled = "Cancelled"
-
-class CampaignType(str, Enum):
-    email = "Email"
-    social_media = "Social Media"
-    direct_mail = "Direct Mail"
-    ppc = "PPC"
-    content = "Content"
-    event = "Event"
-    other = "Other"
 
 class CampaignBase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: CampaignType
-    status: CampaignStatus = CampaignStatus.draft
+    type: str
+    status: str = "Draft"
     start_date: datetime
     end_date: Optional[datetime] = None
     budget: Optional[float] = None
     assigned_to: Optional[str] = None
     tags: List[str] = []
+
+    @validator('status')
+    def validate_status(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
+
+    @validator('type')
+    def validate_type(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class CampaignCreate(CampaignBase):
     pass
@@ -45,9 +39,15 @@ class Campaign(CampaignBase):
 class CampaignTemplateBase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: CampaignType
+    type: str
     content: str  # JSON template content
     is_active: bool = True
+
+    @validator('type')
+    def validate_type(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class CampaignTemplateCreate(CampaignTemplateBase):
     pass
@@ -67,6 +67,12 @@ class ABTestBase(BaseModel):
     variant_b_content: str
     test_metric: str  # e.g., "click_rate", "conversion_rate"
     status: str = "draft"  # draft, running, completed
+
+    @validator('test_metric')
+    def validate_test_metric(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class ABTestCreate(ABTestBase):
     pass

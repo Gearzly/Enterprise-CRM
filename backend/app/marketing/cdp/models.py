@@ -1,29 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class DataSourceType(str, Enum):
-    crm = "CRM"
-    website = "Website"
-    email = "Email"
-    social_media = "Social Media"
-    mobile_app = "Mobile App"
-    offline = "Offline"
-    third_party = "Third Party"
-    other = "Other"
-
-class IdentityResolutionStatus(str, Enum):
-    pending = "Pending"
-    matched = "Matched"
-    merged = "Merged"
-    conflicted = "Conflicted"
-
-class DataPrivacyStatus(str, Enum):
-    compliant = "Compliant"
-    pending_consent = "Pending Consent"
-    restricted = "Restricted"
-    deleted = "Deleted"
 
 class CustomerDataProfileBase(BaseModel):
     customer_id: str
@@ -54,7 +31,7 @@ class CustomerDataProfile(CustomerDataProfileBase):
 class DataIntegrationBase(BaseModel):
     name: str
     description: Optional[str] = None
-    source_type: DataSourceType
+    source_type: str
     connection_details: Dict[str, Any]  # JSON structure for connection details
     is_active: bool = True
     sync_frequency: str = "daily"  # hourly, daily, weekly, monthly
@@ -77,7 +54,7 @@ class IdentityResolutionBase(BaseModel):
     primary_profile_id: int
     duplicate_profile_id: int
     confidence_score: float  # 0.0 to 1.0
-    resolution_status: IdentityResolutionStatus = IdentityResolutionStatus.pending
+    resolution_status: str = "Pending"
     resolved_by: Optional[str] = None
     resolution_notes: Optional[str] = None
 
@@ -118,7 +95,7 @@ class DataPrivacyBase(BaseModel):
     consent_source: str  # e.g., "Website Form", "Email", "Phone Call"
     data_processing_purposes: List[str] = []
     restriction_notes: Optional[str] = None
-    privacy_status: DataPrivacyStatus = DataPrivacyStatus.compliant
+    privacy_status: str = "Compliant"
 
 class DataPrivacyCreate(DataPrivacyBase):
     pass

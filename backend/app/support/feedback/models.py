@@ -1,35 +1,19 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class FeedbackType(str, Enum):
-    survey = "Survey"
-    nps = "NPS"
-    general = "General"
-    feature_request = "Feature Request"
-    bug_report = "Bug Report"
-
-class FeedbackStatus(str, Enum):
-    pending = "Pending"
-    reviewed = "Reviewed"
-    addressed = "Addressed"
-    archived = "Archived"
-
-class FeedbackCategory(str, Enum):
-    product = "Product"
-    service = "Service"
-    support = "Support"
-    billing = "Billing"
-    other = "Other"
+# Removed FeedbackType enum
+# Removed FeedbackStatus enum
+# Removed FeedbackCategory enum
 
 class FeedbackBase(BaseModel):
     customer_id: int
-    type: FeedbackType
+    type: str  # Changed from FeedbackType to str
     subject: str
     description: str
-    category: FeedbackCategory = FeedbackCategory.other
-    status: FeedbackStatus = FeedbackStatus.pending
+    category: str = "Other"  # Changed from FeedbackCategory to str
+    status: str = "Pending"  # Changed from FeedbackStatus to str
     priority: int = 1  # 1-5 scale
     tags: List[str] = []
 

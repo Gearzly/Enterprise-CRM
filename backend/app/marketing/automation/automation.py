@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     Workflow, WorkflowCreate, WorkflowUpdate,
     WorkflowStep, WorkflowStepCreate, WorkflowStepUpdate,
@@ -15,7 +15,7 @@ from .config import (
     get_default_execution_count, get_default_score_threshold
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/automation", tags=["automation"])
 
 # In-memory storage for demo purposes
 workflows_db = []
@@ -23,6 +23,21 @@ workflow_steps_db = []
 lead_qualification_rules_db = []
 customer_journey_stages_db = []
 event_triggers_db = []
+
+@router.get("/")
+def get_automation_dashboard():
+    """Get marketing automation dashboard with summary statistics"""
+    return {
+        "message": "Marketing Automation Dashboard",
+        "statistics": {
+            "total_workflows": len(workflows_db),
+            "active_workflows": len([w for w in workflows_db if w.status == "Active"]),
+            "total_workflow_steps": len(workflow_steps_db),
+            "total_qualification_rules": len(lead_qualification_rules_db),
+            "total_journey_stages": len(customer_journey_stages_db),
+            "total_event_triggers": len(event_triggers_db)
+        }
+    }
 
 @router.get("/workflows", response_model=List[Workflow])
 def list_workflows():
@@ -103,7 +118,7 @@ def get_workflows_by_status(status: str):
     """Get workflows by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [workflow for workflow in workflows_db if workflow.status.value == normalized_status]
+    return [workflow for workflow in workflows_db if workflow.status == normalized_status]
 
 # Workflow Steps endpoints
 @router.get("/workflow-steps", response_model=List[WorkflowStep])

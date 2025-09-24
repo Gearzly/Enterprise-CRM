@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from .models import (
-    Activity, ActivityCreate, ActivityUpdate, ActivityType, ActivityStatus
+    Activity, ActivityCreate, ActivityUpdate
 )
 from .config import (
     get_activity_types, get_activity_statuses
@@ -11,9 +11,22 @@ from .config import (
 from app.core.deps import get_db
 from app.core.crud import activity as crud_activity
 
-router = APIRouter()
+router = APIRouter(prefix="/activities", tags=["activities"])
 
-@router.get("/", response_model=List[Activity])
+@router.get("/")
+def get_activities_dashboard():
+    """Get sales activities dashboard with summary statistics"""
+    return {
+        "message": "Sales Activities Dashboard",
+        "statistics": {
+            "total_activities": "Available via list endpoint",
+            "activities_by_type": "Filtered by type",
+            "activities_by_status": "Filtered by status",
+            "upcoming_activities": "Available via upcoming endpoint"
+        }
+    }
+
+@router.get("/activities", response_model=List[Activity])
 def list_activities(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all activities"""
     activities = crud_activity.get_multi(db, skip=skip, limit=limit)

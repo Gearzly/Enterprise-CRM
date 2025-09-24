@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     CustomerDataProfile, CustomerDataProfileCreate, CustomerDataProfileUpdate,
     DataIntegration, DataIntegrationCreate, DataIntegrationUpdate,
@@ -26,6 +25,19 @@ identity_resolutions_db = []
 real_time_segments_db = []
 data_privacy_records_db = []
 data_quality_records_db = []
+
+@router.get("/")
+def get_cdp_dashboard():
+    """Get Customer Data Platform dashboard with summary statistics"""
+    return {
+        "message": "Customer Data Platform Dashboard",
+        "statistics": {
+            "total_profiles": len(customer_profiles_db),
+            "data_integrations": len(data_integrations_db),
+            "identity_resolutions": len(identity_resolutions_db),
+            "real_time_segments": len(real_time_segments_db)
+        }
+    }
 
 @router.get("/profiles", response_model=List[CustomerDataProfile])
 def list_customer_profiles():

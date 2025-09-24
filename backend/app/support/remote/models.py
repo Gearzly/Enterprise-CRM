@@ -1,32 +1,17 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class RemoteSessionStatus(str, Enum):
-    pending = "Pending"
-    active = "Active"
-    completed = "Completed"
-    failed = "Failed"
-    cancelled = "Cancelled"
-
-class RemoteSessionType(str, Enum):
-    desktop = "Desktop"
-    mobile = "Mobile"
-    server = "Server"
-
-class RemotePlatform(str, Enum):
-    windows = "Windows"
-    macos = "macOS"
-    linux = "Linux"
-    android = "Android"
-    ios = "iOS"
+# Removed RemoteSessionStatus enum
+# Removed RemoteSessionType enum
+# Removed RemotePlatform enum
 
 class RemoteSessionBase(BaseModel):
     customer_id: int
     agent_id: str
-    session_type: RemoteSessionType
-    platform: RemotePlatform
+    session_type: str  # Changed from RemoteSessionType to str
+    platform: str  # Changed from RemotePlatform to str
     device_info: Optional[str] = None
     purpose: Optional[str] = None
     tags: List[str] = []
@@ -39,7 +24,7 @@ class RemoteSessionUpdate(RemoteSessionBase):
 
 class RemoteSession(RemoteSessionBase):
     id: int
-    status: RemoteSessionStatus = RemoteSessionStatus.pending
+    status: str = "Pending"  # Changed from RemoteSessionStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     started_at: Optional[datetime] = None

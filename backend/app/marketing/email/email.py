@@ -1,9 +1,21 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-from .models import (
+from sqlalchemy.orm import Session
+import json
+
+from app.core.database import get_db
+from app.models.marketing import (
+    EmailList as DBEmailList,
+    EmailSubscriber as DBEmailSubscriber,
+    EmailTemplate as DBEmailTemplate,
+    EmailCampaign as DBEmailCampaign,
+    EmailSequence as DBEmailSequence,
+    EmailSequenceStep as DBEmailSequenceStep
+)
+from app.marketing.email.models import (
     EmailList, EmailListCreate, EmailListUpdate,
     EmailSubscriber, EmailSubscriberCreate, EmailSubscriberUpdate,
     EmailTemplate, EmailTemplateCreate, EmailTemplateUpdate,
@@ -11,362 +23,290 @@ from .models import (
     EmailSequence, EmailSequenceCreate, EmailSequenceUpdate,
     EmailSequenceStep, EmailSequenceStepCreate, EmailSequenceStepUpdate
 )
-from .config import (
+from app.marketing.email.service import EmailService
+from app.marketing.email.config import (
     get_email_statuses, get_email_template_categories,
     get_default_open_rate, get_default_click_rate, get_default_bounce_rate
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/email", tags=["email"])
+email_service = EmailService()
 
-# In-memory storage for demo purposes
-email_lists_db = []
-email_subscribers_db = []
-email_templates_db = []
-email_campaigns_db = []
-email_sequences_db = []
-email_sequence_steps_db = []
+@router.get("/")
+def get_email_dashboard(db: Session = Depends(get_db)):
+    """Get email marketing dashboard with summary statistics"""
+    # Get summary counts from database
+    total_lists = len(email_service.get_email_lists(db))
+    total_subscribers = len(email_service.get_email_subscribers(db))
+    total_templates = len(email_service.get_email_templates(db))
+    total_campaigns = len(email_service.get_email_campaigns(db))
+    
+    return {
+        "message": "Email Marketing Dashboard",
+        "statistics": {
+            "total_lists": total_lists,
+            "total_subscribers": total_subscribers,
+            "total_templates": total_templates,
+            "total_campaigns": total_campaigns
+        }
+    }
 
+# Helper function to safely load JSON
+def safe_json_loads(value, default=None):
+    if not value:
+        return default or []
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return default or []
+
+# Email Lists endpoints
 @router.get("/lists", response_model=List[EmailList])
-def list_email_lists():
+def list_email_lists(db: Session = Depends(get_db)):
     """List all email lists"""
-    return email_lists_db
+    db_lists = email_service.get_email_lists(db)
+    return db_lists
 
 @router.get("/lists/{list_id}", response_model=EmailList)
-def get_email_list(list_id: int):
+def get_email_list(list_id: int, db: Session = Depends(get_db)):
     """Get a specific email list by ID"""
-    for email_list in email_lists_db:
-        if email_list.id == list_id:
-            return email_list
-    raise HTTPException(status_code=404, detail="Email list not found")
+    db_list = email_service.get_email_list(db, list_id)
+    if not db_list:
+        raise HTTPException(status_code=404, detail="Email list not found")
+    return db_list
 
 @router.post("/lists", response_model=EmailList)
-def create_email_list(email_list: EmailListCreate):
+def create_email_list(email_list: EmailListCreate, db: Session = Depends(get_db)):
     """Create a new email list"""
-    new_id = max([l.id for l in email_lists_db]) + 1 if email_lists_db else 1
-    new_email_list = EmailList(
-        id=new_id,
-        created_at=datetime.now(),
-        **email_list.dict()
-    )
-    email_lists_db.append(new_email_list)
-    return new_email_list
+    db_email_list = email_service.create_email_list(db, email_list)
+    return db_email_list
 
 @router.put("/lists/{list_id}", response_model=EmailList)
-def update_email_list(list_id: int, email_list_update: EmailListUpdate):
+def update_email_list(list_id: int, email_list_update: EmailListUpdate, db: Session = Depends(get_db)):
     """Update an existing email list"""
-    for index, email_list in enumerate(email_lists_db):
-        if email_list.id == list_id:
-            updated_email_list = EmailList(
-                id=list_id,
-                created_at=email_list.created_at,
-                updated_at=datetime.now(),
-                subscriber_count=email_list.subscriber_count,
-                **email_list_update.dict()
-            )
-            email_lists_db[index] = updated_email_list
-            return updated_email_list
-    raise HTTPException(status_code=404, detail="Email list not found")
+    db_email_list = email_service.update_email_list(db, list_id, email_list_update)
+    if not db_email_list:
+        raise HTTPException(status_code=404, detail="Email list not found")
+    return db_email_list
 
 @router.delete("/lists/{list_id}")
-def delete_email_list(list_id: int):
+def delete_email_list(list_id: int, db: Session = Depends(get_db)):
     """Delete an email list"""
-    for index, email_list in enumerate(email_lists_db):
-        if email_list.id == list_id:
-            del email_lists_db[index]
-            return {"message": "Email list deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email list not found")
+    success = email_service.delete_email_list(db, list_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email list not found")
+    return {"message": "Email list deleted successfully"}
 
 # Email Subscribers endpoints
 @router.get("/subscribers", response_model=List[EmailSubscriber])
-def list_email_subscribers():
+def list_email_subscribers(db: Session = Depends(get_db)):
     """List all email subscribers"""
-    return email_subscribers_db
+    db_subscribers = email_service.get_email_subscribers(db)
+    return db_subscribers
 
 @router.get("/subscribers/{subscriber_id}", response_model=EmailSubscriber)
-def get_email_subscriber(subscriber_id: int):
+def get_email_subscriber(subscriber_id: int, db: Session = Depends(get_db)):
     """Get a specific email subscriber by ID"""
-    for subscriber in email_subscribers_db:
-        if subscriber.id == subscriber_id:
-            return subscriber
-    raise HTTPException(status_code=404, detail="Email subscriber not found")
+    db_subscriber = email_service.get_email_subscriber(db, subscriber_id)
+    if not db_subscriber:
+        raise HTTPException(status_code=404, detail="Email subscriber not found")
+    return db_subscriber
 
 @router.post("/subscribers", response_model=EmailSubscriber)
-def create_email_subscriber(subscriber: EmailSubscriberCreate):
+def create_email_subscriber(subscriber: EmailSubscriberCreate, db: Session = Depends(get_db)):
     """Create a new email subscriber"""
-    new_id = max([s.id for s in email_subscribers_db]) + 1 if email_subscribers_db else 1
-    new_subscriber = EmailSubscriber(
-        id=new_id,
-        created_at=datetime.now(),
-        **subscriber.dict()
-    )
-    email_subscribers_db.append(new_subscriber)
-    return new_subscriber
+    db_subscriber = email_service.create_email_subscriber(db, subscriber)
+    return db_subscriber
 
 @router.put("/subscribers/{subscriber_id}", response_model=EmailSubscriber)
-def update_email_subscriber(subscriber_id: int, subscriber_update: EmailSubscriberUpdate):
+def update_email_subscriber(subscriber_id: int, subscriber_update: EmailSubscriberUpdate, db: Session = Depends(get_db)):
     """Update an existing email subscriber"""
-    for index, subscriber in enumerate(email_subscribers_db):
-        if subscriber.id == subscriber_id:
-            updated_subscriber = EmailSubscriber(
-                id=subscriber_id,
-                created_at=subscriber.created_at,
-                updated_at=datetime.now(),
-                **subscriber_update.dict()
-            )
-            email_subscribers_db[index] = updated_subscriber
-            return updated_subscriber
-    raise HTTPException(status_code=404, detail="Email subscriber not found")
+    db_subscriber = email_service.update_email_subscriber(db, subscriber_id, subscriber_update)
+    if not db_subscriber:
+        raise HTTPException(status_code=404, detail="Email subscriber not found")
+    return db_subscriber
 
 @router.delete("/subscribers/{subscriber_id}")
-def delete_email_subscriber(subscriber_id: int):
+def delete_email_subscriber(subscriber_id: int, db: Session = Depends(get_db)):
     """Delete an email subscriber"""
-    for index, subscriber in enumerate(email_subscribers_db):
-        if subscriber.id == subscriber_id:
-            del email_subscribers_db[index]
-            return {"message": "Email subscriber deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email subscriber not found")
+    success = email_service.delete_email_subscriber(db, subscriber_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email subscriber not found")
+    return {"message": "Email subscriber deleted successfully"}
 
 @router.post("/subscribers/bulk-import")
-def bulk_import_subscribers(subscribers: List[EmailSubscriberCreate]):
+def bulk_import_subscribers(subscribers: List[EmailSubscriberCreate], db: Session = Depends(get_db)):
     """Bulk import email subscribers"""
-    imported_count = 0
-    for subscriber_data in subscribers:
-        new_id = max([s.id for s in email_subscribers_db]) + 1 if email_subscribers_db else 1
-        new_subscriber = EmailSubscriber(
-            id=new_id,
-            created_at=datetime.now(),
-            **subscriber_data.dict()
-        )
-        email_subscribers_db.append(new_subscriber)
-        imported_count += 1
+    imported_count = email_service.bulk_import_subscribers(db, subscribers)
     return {"message": f"Successfully imported {imported_count} subscribers"}
 
 # Email Templates endpoints
 @router.get("/templates", response_model=List[EmailTemplate])
-def list_email_templates():
+def list_email_templates(db: Session = Depends(get_db)):
     """List all email templates"""
-    return email_templates_db
+    db_templates = email_service.get_email_templates(db)
+    return db_templates
 
 @router.get("/templates/{template_id}", response_model=EmailTemplate)
-def get_email_template(template_id: int):
+def get_email_template(template_id: int, db: Session = Depends(get_db)):
     """Get a specific email template by ID"""
-    for template in email_templates_db:
-        if template.id == template_id:
-            return template
-    raise HTTPException(status_code=404, detail="Email template not found")
+    db_template = email_service.get_email_template(db, template_id)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Email template not found")
+    return db_template
 
 @router.post("/templates", response_model=EmailTemplate)
-def create_email_template(template: EmailTemplateCreate):
+def create_email_template(template: EmailTemplateCreate, db: Session = Depends(get_db)):
     """Create a new email template"""
-    new_id = max([t.id for t in email_templates_db]) + 1 if email_templates_db else 1
-    new_template = EmailTemplate(
-        id=new_id,
-        created_at=datetime.now(),
-        **template.dict()
-    )
-    email_templates_db.append(new_template)
-    return new_template
+    db_template = email_service.create_email_template(db, template)
+    return db_template
 
 @router.put("/templates/{template_id}", response_model=EmailTemplate)
-def update_email_template(template_id: int, template_update: EmailTemplateUpdate):
+def update_email_template(template_id: int, template_update: EmailTemplateUpdate, db: Session = Depends(get_db)):
     """Update an existing email template"""
-    for index, template in enumerate(email_templates_db):
-        if template.id == template_id:
-            updated_template = EmailTemplate(
-                id=template_id,
-                created_at=template.created_at,
-                updated_at=datetime.now(),
-                **template_update.dict()
-            )
-            email_templates_db[index] = updated_template
-            return updated_template
-    raise HTTPException(status_code=404, detail="Email template not found")
+    db_template = email_service.update_email_template(db, template_id, template_update)
+    if not db_template:
+        raise HTTPException(status_code=404, detail="Email template not found")
+    return db_template
 
 @router.delete("/templates/{template_id}")
-def delete_email_template(template_id: int):
+def delete_email_template(template_id: int, db: Session = Depends(get_db)):
     """Delete an email template"""
-    for index, template in enumerate(email_templates_db):
-        if template.id == template_id:
-            del email_templates_db[index]
-            return {"message": "Email template deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email template not found")
+    success = email_service.delete_email_template(db, template_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email template not found")
+    return {"message": "Email template deleted successfully"}
 
 # Email Campaigns endpoints
 @router.get("/campaigns", response_model=List[EmailCampaign])
-def list_email_campaigns():
+def list_email_campaigns(db: Session = Depends(get_db)):
     """List all email campaigns"""
-    return email_campaigns_db
+    db_campaigns = email_service.get_email_campaigns(db)
+    return db_campaigns
 
 @router.get("/campaigns/{campaign_id}", response_model=EmailCampaign)
-def get_email_campaign(campaign_id: int):
+def get_email_campaign(campaign_id: int, db: Session = Depends(get_db)):
     """Get a specific email campaign by ID"""
-    for campaign in email_campaigns_db:
-        if campaign.id == campaign_id:
-            return campaign
-    raise HTTPException(status_code=404, detail="Email campaign not found")
+    db_campaign = email_service.get_email_campaign(db, campaign_id)
+    if not db_campaign:
+        raise HTTPException(status_code=404, detail="Email campaign not found")
+    return db_campaign
 
 @router.post("/campaigns", response_model=EmailCampaign)
-def create_email_campaign(campaign: EmailCampaignCreate):
+def create_email_campaign(campaign: EmailCampaignCreate, db: Session = Depends(get_db)):
     """Create a new email campaign"""
-    new_id = max([c.id for c in email_campaigns_db]) + 1 if email_campaigns_db else 1
-    new_campaign = EmailCampaign(
-        id=new_id,
-        created_at=datetime.now(),
-        open_rate=get_default_open_rate(),
-        click_rate=get_default_click_rate(),
-        bounce_rate=get_default_bounce_rate(),
-        **campaign.dict()
+    db_campaign = email_service.create_email_campaign(
+        db, 
+        campaign,
+        get_default_open_rate(),
+        get_default_click_rate(),
+        get_default_bounce_rate()
     )
-    email_campaigns_db.append(new_campaign)
-    return new_campaign
+    return db_campaign
 
 @router.put("/campaigns/{campaign_id}", response_model=EmailCampaign)
-def update_email_campaign(campaign_id: int, campaign_update: EmailCampaignUpdate):
+def update_email_campaign(campaign_id: int, campaign_update: EmailCampaignUpdate, db: Session = Depends(get_db)):
     """Update an existing email campaign"""
-    for index, campaign in enumerate(email_campaigns_db):
-        if campaign.id == campaign_id:
-            updated_campaign = EmailCampaign(
-                id=campaign_id,
-                created_at=campaign.created_at,
-                updated_at=datetime.now(),
-                open_rate=campaign.open_rate,
-                click_rate=campaign.click_rate,
-                bounce_rate=campaign.bounce_rate,
-                unsubscribe_count=campaign.unsubscribe_count,
-                **campaign_update.dict()
-            )
-            email_campaigns_db[index] = updated_campaign
-            return updated_campaign
-    raise HTTPException(status_code=404, detail="Email campaign not found")
+    db_campaign = email_service.update_email_campaign(db, campaign_id, campaign_update)
+    if not db_campaign:
+        raise HTTPException(status_code=404, detail="Email campaign not found")
+    return db_campaign
 
 @router.delete("/campaigns/{campaign_id}")
-def delete_email_campaign(campaign_id: int):
+def delete_email_campaign(campaign_id: int, db: Session = Depends(get_db)):
     """Delete an email campaign"""
-    for index, campaign in enumerate(email_campaigns_db):
-        if campaign.id == campaign_id:
-            del email_campaigns_db[index]
-            return {"message": "Email campaign deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email campaign not found")
+    success = email_service.delete_email_campaign(db, campaign_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email campaign not found")
+    return {"message": "Email campaign deleted successfully"}
 
 @router.post("/campaigns/{campaign_id}/send")
-def send_email_campaign(campaign_id: int):
+def send_email_campaign(campaign_id: int, db: Session = Depends(get_db)):
     """Send an email campaign"""
-    for index, campaign in enumerate(email_campaigns_db):
-        if campaign.id == campaign_id:
-            # Update campaign status to sending
-            campaign.status = "Sending"
-            campaign.sent_at = datetime.now()
-            email_campaigns_db[index] = campaign
-            return {"message": f"Email campaign {campaign_id} is being sent"}
-    raise HTTPException(status_code=404, detail="Email campaign not found")
+    db_campaign = email_service.get_email_campaign(db, campaign_id)
+    if not db_campaign:
+        raise HTTPException(status_code=404, detail="Email campaign not found")
+    return {"message": f"Email campaign {campaign_id} is being sent"}
 
 @router.get("/campaigns/status/{status}", response_model=List[EmailCampaign])
-def get_email_campaigns_by_status(status: str):
+def get_email_campaigns_by_status(status: str, db: Session = Depends(get_db)):
     """Get email campaigns by status"""
-    # Normalize the status parameter to handle case differences
-    normalized_status = status.lower().title()
-    return [campaign for campaign in email_campaigns_db if campaign.status.value == normalized_status]
+    db_campaigns = email_service.get_email_campaigns_by_status(db, status)
+    return db_campaigns
 
 # Email Sequences endpoints
 @router.get("/sequences", response_model=List[EmailSequence])
-def list_email_sequences():
+def list_email_sequences(db: Session = Depends(get_db)):
     """List all email sequences"""
-    return email_sequences_db
+    db_sequences = email_service.get_email_sequences(db)
+    return db_sequences
 
 @router.get("/sequences/{sequence_id}", response_model=EmailSequence)
-def get_email_sequence(sequence_id: int):
+def get_email_sequence(sequence_id: int, db: Session = Depends(get_db)):
     """Get a specific email sequence by ID"""
-    for sequence in email_sequences_db:
-        if sequence.id == sequence_id:
-            return sequence
-    raise HTTPException(status_code=404, detail="Email sequence not found")
+    db_sequence = email_service.get_email_sequence(db, sequence_id)
+    if not db_sequence:
+        raise HTTPException(status_code=404, detail="Email sequence not found")
+    return db_sequence
 
 @router.post("/sequences", response_model=EmailSequence)
-def create_email_sequence(sequence: EmailSequenceCreate):
+def create_email_sequence(sequence: EmailSequenceCreate, db: Session = Depends(get_db)):
     """Create a new email sequence"""
-    new_id = max([s.id for s in email_sequences_db]) + 1 if email_sequences_db else 1
-    new_sequence = EmailSequence(
-        id=new_id,
-        created_at=datetime.now(),
-        **sequence.dict()
-    )
-    email_sequences_db.append(new_sequence)
-    return new_sequence
+    db_sequence = email_service.create_email_sequence(db, sequence)
+    return db_sequence
 
 @router.put("/sequences/{sequence_id}", response_model=EmailSequence)
-def update_email_sequence(sequence_id: int, sequence_update: EmailSequenceUpdate):
+def update_email_sequence(sequence_id: int, sequence_update: EmailSequenceUpdate, db: Session = Depends(get_db)):
     """Update an existing email sequence"""
-    for index, sequence in enumerate(email_sequences_db):
-        if sequence.id == sequence_id:
-            updated_sequence = EmailSequence(
-                id=sequence_id,
-                created_at=sequence.created_at,
-                updated_at=datetime.now(),
-                email_count=sequence.email_count,
-                **sequence_update.dict()
-            )
-            email_sequences_db[index] = updated_sequence
-            return updated_sequence
-    raise HTTPException(status_code=404, detail="Email sequence not found")
+    db_sequence = email_service.update_email_sequence(db, sequence_id, sequence_update)
+    if not db_sequence:
+        raise HTTPException(status_code=404, detail="Email sequence not found")
+    return db_sequence
 
 @router.delete("/sequences/{sequence_id}")
-def delete_email_sequence(sequence_id: int):
+def delete_email_sequence(sequence_id: int, db: Session = Depends(get_db)):
     """Delete an email sequence"""
-    for index, sequence in enumerate(email_sequences_db):
-        if sequence.id == sequence_id:
-            del email_sequences_db[index]
-            return {"message": "Email sequence deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email sequence not found")
+    success = email_service.delete_email_sequence(db, sequence_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email sequence not found")
+    return {"message": "Email sequence deleted successfully"}
 
 # Email Sequence Steps endpoints
 @router.get("/sequence-steps", response_model=List[EmailSequenceStep])
-def list_email_sequence_steps():
+def list_email_sequence_steps(db: Session = Depends(get_db)):
     """List all email sequence steps"""
-    return email_sequence_steps_db
+    db_steps = email_service.get_email_sequence_steps(db)
+    return db_steps
 
 @router.get("/sequence-steps/{step_id}", response_model=EmailSequenceStep)
-def get_email_sequence_step(step_id: int):
+def get_email_sequence_step(step_id: int, db: Session = Depends(get_db)):
     """Get a specific email sequence step by ID"""
-    for step in email_sequence_steps_db:
-        if step.id == step_id:
-            return step
-    raise HTTPException(status_code=404, detail="Email sequence step not found")
+    db_step = email_service.get_email_sequence_step(db, step_id)
+    if not db_step:
+        raise HTTPException(status_code=404, detail="Email sequence step not found")
+    return db_step
 
 @router.post("/sequence-steps", response_model=EmailSequenceStep)
-def create_email_sequence_step(step: EmailSequenceStepCreate):
+def create_email_sequence_step(step: EmailSequenceStepCreate, db: Session = Depends(get_db)):
     """Create a new email sequence step"""
-    new_id = max([s.id for s in email_sequence_steps_db]) + 1 if email_sequence_steps_db else 1
-    new_step = EmailSequenceStep(
-        id=new_id,
-        created_at=datetime.now(),
-        **step.dict()
-    )
-    email_sequence_steps_db.append(new_step)
-    return new_step
+    db_step = email_service.create_email_sequence_step(db, step)
+    return db_step
 
 @router.put("/sequence-steps/{step_id}", response_model=EmailSequenceStep)
-def update_email_sequence_step(step_id: int, step_update: EmailSequenceStepUpdate):
+def update_email_sequence_step(step_id: int, step_update: EmailSequenceStepUpdate, db: Session = Depends(get_db)):
     """Update an existing email sequence step"""
-    for index, step in enumerate(email_sequence_steps_db):
-        if step.id == step_id:
-            updated_step = EmailSequenceStep(
-                id=step_id,
-                created_at=step.created_at,
-                updated_at=datetime.now(),
-                **step_update.dict()
-            )
-            email_sequence_steps_db[index] = updated_step
-            return updated_step
-    raise HTTPException(status_code=404, detail="Email sequence step not found")
+    db_step = email_service.update_email_sequence_step(db, step_id, step_update)
+    if not db_step:
+        raise HTTPException(status_code=404, detail="Email sequence step not found")
+    return db_step
 
 @router.delete("/sequence-steps/{step_id}")
-def delete_email_sequence_step(step_id: int):
+def delete_email_sequence_step(step_id: int, db: Session = Depends(get_db)):
     """Delete an email sequence step"""
-    for index, step in enumerate(email_sequence_steps_db):
-        if step.id == step_id:
-            del email_sequence_steps_db[index]
-            return {"message": "Email sequence step deleted successfully"}
-    raise HTTPException(status_code=404, detail="Email sequence step not found")
+    success = email_service.delete_email_sequence_step(db, step_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Email sequence step not found")
+    return {"message": "Email sequence step deleted successfully"}
 
 # Configuration endpoints
 @router.get("/config/statuses", response_model=List[str])

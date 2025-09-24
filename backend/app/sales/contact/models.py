@@ -1,8 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Optional
 from datetime import datetime
-# Import enums from the shared enums file
-from app.models.enums import ContactType
 
 class ContactBase(BaseModel):
     first_name: str
@@ -17,8 +15,14 @@ class ContactBase(BaseModel):
     state: Optional[str] = None
     country: Optional[str] = None
     postal_code: Optional[str] = None
-    contact_type: ContactType = ContactType.primary
+    contact_type: str = "Primary"
     notes: Optional[str] = None
+
+    @validator('contact_type')
+    def validate_contact_type(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class ContactCreate(ContactBase):
     pass
@@ -30,3 +34,6 @@ class Contact(ContactBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True

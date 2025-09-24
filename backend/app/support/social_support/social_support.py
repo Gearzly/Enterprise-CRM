@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -12,12 +12,25 @@ from .config import (
     get_default_sentiment, get_max_tags_per_inquiry
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/social-support", tags=["social-support"])
 
 # In-memory storage for demo purposes
 social_inquiries_db = []
 social_responses_db = []
 social_templates_db = []
+
+@router.get("/")
+def get_social_support_dashboard():
+    """Get social support dashboard with summary statistics"""
+    return {
+        "message": "Support Social Support Dashboard",
+        "statistics": {
+            "total_inquiries": len(social_inquiries_db),
+            "total_responses": len(social_responses_db),
+            "total_templates": len(social_templates_db),
+            "platforms_monitored": "Available via config endpoint"
+        }
+    }
 
 @router.get("/inquiries", response_model=List[SocialInquiry])
 def list_social_inquiries():
@@ -101,14 +114,14 @@ def get_social_inquiries_by_platform(platform: str):
     """Get social inquiries by platform"""
     # Normalize the platform parameter to handle case differences
     normalized_platform = platform.lower().title()
-    return [inquiry for inquiry in social_inquiries_db if inquiry.platform.value == normalized_platform]
+    return [inquiry for inquiry in social_inquiries_db if inquiry.platform == normalized_platform]
 
 @router.get("/inquiries/sentiment/{sentiment}", response_model=List[SocialInquiry])
 def get_social_inquiries_by_sentiment(sentiment: str):
     """Get social inquiries by sentiment"""
     # Normalize the sentiment parameter to handle case differences
     normalized_sentiment = sentiment.lower().title()
-    return [inquiry for inquiry in social_inquiries_db if inquiry.sentiment.value == normalized_sentiment]
+    return [inquiry for inquiry in social_inquiries_db if inquiry.sentiment == normalized_sentiment]
 
 # Social Response endpoints
 @router.get("/responses", response_model=List[SocialResponse])
@@ -225,11 +238,11 @@ def delete_social_template(template_id: int):
     raise HTTPException(status_code=404, detail="Social template not found")
 
 @router.get("/templates/platform/{platform}", response_model=List[SocialTemplate])
-def get_templates_by_platform(platform: str):
+def get_social_templates_by_platform(platform: str):
     """Get social templates by platform"""
     # Normalize the platform parameter to handle case differences
     normalized_platform = platform.lower().title()
-    return [template for template in social_templates_db if template.platform.value == normalized_platform]
+    return [template for template in social_templates_db if template.platform == normalized_platform]
 
 # Configuration endpoints
 @router.get("/config/platforms", response_model=List[str])

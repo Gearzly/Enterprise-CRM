@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     Event, EventCreate, EventUpdate,
     Registration, RegistrationCreate, RegistrationUpdate,
@@ -82,14 +81,14 @@ def get_events_by_status(status: str):
     """Get events by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [event for event in events_db if event.status.value == normalized_status]
+    return [event for event in events_db if event.status == normalized_status]
 
 @router.get("/events/type/{event_type}", response_model=List[Event])
 def get_events_by_type(event_type: str):
     """Get events by type"""
     # Normalize the event_type parameter to handle case differences
     normalized_type = event_type.lower().title()
-    return [event for event in events_db if event.event_type.value == normalized_type]
+    return [event for event in events_db if event.event_type == normalized_type]
 
 @router.post("/events/{event_id}/open-registration")
 def open_event_registration(event_id: int):

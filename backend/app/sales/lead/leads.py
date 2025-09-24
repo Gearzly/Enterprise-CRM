@@ -3,17 +3,30 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from .models import (
-    Lead, LeadCreate, LeadUpdate, LeadStatus, LeadSource
+    Lead, LeadCreate, LeadUpdate
 )
 from .config import (
     get_lead_statuses, get_lead_sources
 )
 from app.core.deps import get_db
-from app.core.crud import lead as crud_lead
+from app.core.crud.lead import lead as crud_lead
 
-router = APIRouter()
+router = APIRouter(prefix="/leads", tags=["leads"])
 
-@router.get("/", response_model=List[Lead])
+@router.get("/")
+def get_leads_dashboard():
+    """Get sales leads dashboard with summary statistics"""
+    return {
+        "message": "Sales Leads Dashboard",
+        "statistics": {
+            "total_leads": "Available via list endpoint",
+            "leads_by_status": "Filtered by status",
+            "leads_by_source": "Filtered by source",
+            "recent_leads": "Available via recent endpoint"
+        }
+    }
+
+@router.get("/leads", response_model=List[Lead])
 def list_leads(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all leads"""
     leads = crud_lead.get_multi(db, skip=skip, limit=limit)
@@ -30,6 +43,17 @@ def get_lead(lead_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=Lead)
 def create_lead(lead: LeadCreate, db: Session = Depends(get_db)):
     """Create a new lead"""
+    # Validate lead data
+    lead_data = lead.dict()
+    statuses = get_lead_statuses()
+    sources = get_lead_sources()
+    
+    if lead_data.get('status') not in statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {statuses}")
+    
+    if lead_data.get('source') not in sources:
+        raise HTTPException(status_code=400, detail=f"Invalid source. Must be one of: {sources}")
+    
     return crud_lead.create(db, obj_in=lead)
 
 @router.put("/{lead_id}", response_model=Lead)
@@ -38,6 +62,19 @@ def update_lead(lead_id: int, lead_update: LeadUpdate, db: Session = Depends(get
     db_lead = crud_lead.get(db, id=lead_id)
     if db_lead is None:
         raise HTTPException(status_code=404, detail="Lead not found")
+    
+    # Validate lead data if provided
+    update_data = lead_update.dict(exclude_unset=True)
+    if update_data:
+        statuses = get_lead_statuses()
+        sources = get_lead_sources()
+        
+        if 'status' in update_data and update_data['status'] not in statuses:
+            raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {statuses}")
+        
+        if 'source' in update_data and update_data['source'] not in sources:
+            raise HTTPException(status_code=400, detail=f"Invalid source. Must be one of: {sources}")
+    
     return crud_lead.update(db, db_obj=db_lead, obj_in=lead_update)
 
 @router.delete("/{lead_id}")
@@ -52,11 +89,21 @@ def delete_lead(lead_id: int, db: Session = Depends(get_db)):
 @router.get("/status/{status}", response_model=List[Lead])
 def get_leads_by_status(status: str, db: Session = Depends(get_db)):
     """Get leads by status"""
+    # Validate status
+    statuses = get_lead_statuses()
+    if status not in statuses:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {statuses}")
+    
     return crud_lead.get_by_status(db, status=status)
 
 @router.get("/source/{source}", response_model=List[Lead])
 def get_leads_by_source(source: str, db: Session = Depends(get_db)):
     """Get leads by source"""
+    # Validate source
+    sources = get_lead_sources()
+    if source not in sources:
+        raise HTTPException(status_code=400, detail=f"Invalid source. Must be one of: {sources}")
+    
     return crud_lead.get_by_source(db, source=source)
 
 @router.get("/assigned/{assigned_to}", response_model=List[Lead])

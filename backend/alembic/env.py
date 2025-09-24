@@ -16,9 +16,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from app.core.database import Base
 from app.models.sales import Lead, Contact, Opportunity, Quotation, Activity, Target, Report
 
-# Get the database URL from environment or use default
+# Get the database URL from environment or raise an error
 import os
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./crm_sales.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# If no DATABASE_URL is set, raise an error since we no longer default to SQLite
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL environment variable is not set. Please configure it in your .env file.")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

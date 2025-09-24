@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -12,14 +12,27 @@ from .config import (
     get_default_response_time_hours, get_max_notification_threshold
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/sla", tags=["sla"])
 
 # In-memory storage for demo purposes
 slas_db = []
 sla_breaches_db = []
 sla_notifications_db = []
 
-@router.get("/", response_model=List[SLA])
+@router.get("/")
+def get_sla_dashboard():
+    """Get support SLA dashboard with summary statistics"""
+    return {
+        "message": "Support SLA Dashboard",
+        "statistics": {
+            "total_slas": len(slas_db),
+            "total_breaches": len(sla_breaches_db),
+            "total_notifications": len(sla_notifications_db),
+            "active_slas": len([s for s in slas_db if s.is_active])
+        }
+    }
+
+@router.get("/sla", response_model=List[SLA])
 def list_slas():
     """List all SLAs"""
     return slas_db
@@ -86,12 +99,12 @@ def deactivate_sla(sla_id: int):
             return {"message": "SLA deactivated successfully"}
     raise HTTPException(status_code=404, detail="SLA not found")
 
-@router.get("/type/{type}", response_model=List[SLA])
+@router.get("/slas/type/{type}", response_model=List[SLA])
 def get_slas_by_type(type: str):
     """Get SLAs by type"""
     # Normalize the type parameter to handle case differences
     normalized_type = type.lower().title()
-    return [sla for sla in slas_db if sla.type.value == normalized_type]
+    return [sla for sla in slas_db if sla.type == normalized_type]
 
 @router.get("/active", response_model=List[SLA])
 def get_active_slas():

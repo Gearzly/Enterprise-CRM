@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from .models import (
-    Quotation, QuotationCreate, QuotationUpdate, QuotationStatus
+    Quotation, QuotationCreate, QuotationUpdate
 )
 from .config import (
     get_quotation_statuses, get_default_tax_rate
@@ -11,9 +11,22 @@ from .config import (
 from app.core.deps import get_db
 from app.core.crud import quotation as crud_quotation
 
-router = APIRouter()
+router = APIRouter(prefix="/quotations", tags=["quotations"])
 
-@router.get("/", response_model=List[Quotation])
+@router.get("/")
+def get_quotations_dashboard():
+    """Get sales quotations dashboard with summary statistics"""
+    return {
+        "message": "Sales Quotations Dashboard",
+        "statistics": {
+            "total_quotations": "Available via list endpoint",
+            "quotations_by_status": "Filtered by status",
+            "quotations_by_amount": "Filtered by amount range",
+            "recent_quotations": "Available via recent endpoint"
+        }
+    }
+
+@router.get("/quotations", response_model=List[Quotation])
 def list_quotations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all quotations"""
     quotations = crud_quotation.get_multi(db, skip=skip, limit=limit)

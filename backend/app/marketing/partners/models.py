@@ -1,21 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class PartnerStatus(str, Enum):
-    active = "Active"
-    inactive = "Inactive"
-    pending = "Pending"
-    suspended = "Suspended"
-
-class PartnerType(str, Enum):
-    reseller = "Reseller"
-    distributor = "Distributor"
-    affiliate = "Affiliate"
-    technology = "Technology Partner"
-    strategic = "Strategic Partner"
-    other = "Other"
 
 class PartnerBase(BaseModel):
     name: str
@@ -25,8 +10,8 @@ class PartnerBase(BaseModel):
     phone: Optional[str] = None
     website: Optional[str] = None
     address: Optional[str] = None
-    partner_type: PartnerType
-    status: PartnerStatus = PartnerStatus.pending
+    partner_type: str
+    status: str = "Pending"
     commission_rate: Optional[float] = None
     notes: Optional[str] = None
 

@@ -1,14 +1,17 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Session
 from sqlalchemy import select, and_
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status as fastapi_status
 from app.core.crud.base import CRUDBase
 from app.models.sales import Opportunity
-from app.sales.opportunity.models import OpportunityCreate, OpportunityUpdate
 from datetime import datetime, timedelta
 
-class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate]):
+# Use TYPE_CHECKING to avoid circular imports
+if TYPE_CHECKING:
+    from app.sales.opportunity.models import OpportunityCreate, OpportunityUpdate
+
+class CRUDOpportunity(CRUDBase[Opportunity, 'OpportunityCreate', 'OpportunityUpdate']):
     def get_by_account(self, db: Session, *, account_id: int) -> List[Opportunity]:
         try:
             stmt = select(Opportunity).where(Opportunity.account_id == account_id)
@@ -16,7 +19,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by account: {str(e)}"
             )
 
@@ -27,7 +30,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by contact: {str(e)}"
             )
 
@@ -38,7 +41,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by stage: {str(e)}"
             )
 
@@ -49,7 +52,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by assignee: {str(e)}"
             )
 
@@ -64,7 +67,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by value range: {str(e)}"
             )
 
@@ -79,7 +82,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching opportunities by probability range: {str(e)}"
             )
 
@@ -91,7 +94,7 @@ class CRUDOpportunity(CRUDBase[Opportunity, OpportunityCreate, OpportunityUpdate
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching recent opportunities: {str(e)}"
             )
 

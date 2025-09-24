@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -12,12 +12,25 @@ from .config import (
     get_default_priority, get_max_message_length
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/live-chat", tags=["live-chat"])
 
 # In-memory storage for demo purposes
 chat_sessions_db = []
 chat_messages_db = []
 chat_transcripts_db = []
+
+@router.get("/")
+def get_live_chat_dashboard():
+    """Get support live chat dashboard with summary statistics"""
+    return {
+        "message": "Support Live Chat Dashboard",
+        "statistics": {
+            "total_sessions": len(chat_sessions_db),
+            "total_messages": len(chat_messages_db),
+            "total_transcripts": len(chat_transcripts_db),
+            "active_sessions": len([s for s in chat_sessions_db if s.status == "Active"])
+        }
+    }
 
 @router.get("/sessions", response_model=List[ChatSession])
 def list_chat_sessions():
@@ -114,7 +127,7 @@ def get_chat_sessions_by_status(status: str):
     """Get chat sessions by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [session for session in chat_sessions_db if session.status.value == normalized_status]
+    return [session for session in chat_sessions_db if session.status == normalized_status]
 
 # Chat Messages endpoints
 @router.get("/messages", response_model=List[ChatMessage])

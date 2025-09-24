@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -13,13 +13,26 @@ from .config import (
     get_default_session_type, get_default_platform, get_max_file_transfer_size_mb
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/remote", tags=["remote"])
 
 # In-memory storage for demo purposes
 remote_sessions_db = []
 diagnostic_tools_db = []
 diagnostic_results_db = []
 file_transfers_db = []
+
+@router.get("/")
+def get_remote_support_dashboard():
+    """Get remote support dashboard with summary statistics"""
+    return {
+        "message": "Support Remote Dashboard",
+        "statistics": {
+            "total_sessions": len(remote_sessions_db),
+            "active_sessions": len([s for s in remote_sessions_db if s.status == "Active"]),
+            "diagnostic_tools": len(diagnostic_tools_db),
+            "file_transfers": len(file_transfers_db)
+        }
+    }
 
 @router.get("/sessions", response_model=List[RemoteSession])
 def list_remote_sessions():
@@ -116,14 +129,14 @@ def get_remote_sessions_by_status(status: str):
     """Get remote sessions by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [session for session in remote_sessions_db if session.status.value == normalized_status]
+    return [session for session in remote_sessions_db if session.status == normalized_status]
 
 @router.get("/sessions/platform/{platform}", response_model=List[RemoteSession])
 def get_remote_sessions_by_platform(platform: str):
     """Get remote sessions by platform"""
     # Normalize the platform parameter to handle case differences
     normalized_platform = platform.lower().title()
-    return [session for session in remote_sessions_db if session.platform.value == normalized_platform]
+    return [session for session in remote_sessions_db if session.platform == normalized_platform]
 
 # Diagnostic Tool endpoints
 @router.get("/tools", response_model=List[DiagnosticTool])

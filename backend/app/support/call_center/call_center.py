@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -12,12 +12,25 @@ from .config import (
     get_call_priorities, get_default_priority, get_max_wait_time_minutes
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/call-center", tags=["call-center"])
 
 # In-memory storage for demo purposes
 calls_db = []
 call_queues_db = []
 ivr_menus_db = []
+
+@router.get("/")
+def get_call_center_dashboard():
+    """Get support call center dashboard with summary statistics"""
+    return {
+        "message": "Support Call Center Dashboard",
+        "statistics": {
+            "total_calls": len(calls_db),
+            "total_queues": len(call_queues_db),
+            "total_ivr_menus": len(ivr_menus_db),
+            "active_calls": len([c for c in calls_db if c.status == "In Progress"])
+        }
+    }
 
 @router.get("/calls", response_model=List[Call])
 def list_calls():
@@ -105,15 +118,15 @@ def get_calls_by_agent(agent_id: str):
 def get_calls_by_status(status: str):
     """Get calls by status"""
     # Normalize the status parameter to handle case differences
-    normalized_status = status.lower().title().replace("_", " ")
-    return [call for call in calls_db if call.status.value == normalized_status]
+    normalized_status = status.lower().title()
+    return [call for call in calls_db if call.status == normalized_status]
 
 @router.get("/calls/direction/{direction}", response_model=List[Call])
 def get_calls_by_direction(direction: str):
     """Get calls by direction"""
     # Normalize the direction parameter to handle case differences
     normalized_direction = direction.lower().title()
-    return [call for call in calls_db if call.direction.value == normalized_direction]
+    return [call for call in calls_db if call.direction == normalized_direction]
 
 # Call Queue endpoints
 @router.get("/queues", response_model=List[CallQueue])

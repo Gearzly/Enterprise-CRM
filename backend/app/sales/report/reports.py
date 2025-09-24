@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from .models import Report, ReportCreate, ReportUpdate, ReportType, ReportStatus
+from .models import Report, ReportCreate, ReportUpdate
 from .models import SalesMetrics, LeadByStatus, OpportunityByStage, QuotationByStatus, SalesReport
 from .config import get_report_types, get_report_statuses
 from app.core.deps import get_db
@@ -15,9 +15,22 @@ from app.core.crud import quotation as crud_quotation
 # Import config functions
 from ..opportunity.config import get_closed_won_stage
 
-router = APIRouter()
+router = APIRouter(prefix="/reports", tags=["reports"])
 
-@router.get("/", response_model=List[Report])
+@router.get("/")
+def get_reports_dashboard():
+    """Get sales reports dashboard with summary statistics"""
+    return {
+        "message": "Sales Reports Dashboard",
+        "statistics": {
+            "total_reports": "Available via list endpoint",
+            "sales_metrics": "Available via sales/metrics endpoint",
+            "sales_report": "Available via sales endpoint",
+            "leads_by_status": "Included in sales report"
+        }
+    }
+
+@router.get("/reports", response_model=List[Report])
 def list_reports(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all reports"""
     reports = crud_report.get_multi(db, skip=skip, limit=limit)

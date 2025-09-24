@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -13,7 +13,7 @@ from .config import (
     get_default_category, get_default_status, get_max_tags_per_feedback
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/feedback", tags=["feedback"])
 
 # In-memory storage for demo purposes
 feedback_db = []
@@ -21,7 +21,20 @@ surveys_db = []
 survey_questions_db = []
 survey_responses_db = []
 
-@router.get("/", response_model=List[Feedback])
+@router.get("/")
+def get_feedback_dashboard():
+    """Get support feedback dashboard with summary statistics"""
+    return {
+        "message": "Support Feedback Dashboard",
+        "statistics": {
+            "total_feedback": len(feedback_db),
+            "total_surveys": len(surveys_db),
+            "total_questions": len(survey_questions_db),
+            "total_responses": len(survey_responses_db)
+        }
+    }
+
+@router.get("/feedback", response_model=List[Feedback])
 def list_feedback():
     """List all feedback"""
     return feedback_db
@@ -97,22 +110,22 @@ def get_feedback_by_customer(customer_id: int):
 def get_feedback_by_type(type: str):
     """Get feedback by type"""
     # Normalize the type parameter to handle case differences
-    normalized_type = type.lower().title().replace("_", " ")
-    return [feedback for feedback in feedback_db if feedback.type.value == normalized_type]
+    normalized_type = type.lower().title()
+    return [feedback for feedback in feedback_db if feedback.type == normalized_type]
 
 @router.get("/category/{category}", response_model=List[Feedback])
 def get_feedback_by_category(category: str):
     """Get feedback by category"""
     # Normalize the category parameter to handle case differences
     normalized_category = category.lower().title()
-    return [feedback for feedback in feedback_db if feedback.category.value == normalized_category]
+    return [feedback for feedback in feedback_db if feedback.category == normalized_category]
 
 @router.get("/status/{status}", response_model=List[Feedback])
 def get_feedback_by_status(status: str):
     """Get feedback by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [feedback for feedback in feedback_db if feedback.status.value == normalized_status]
+    return [feedback for feedback in feedback_db if feedback.status == normalized_status]
 
 # Survey endpoints
 @router.get("/surveys", response_model=List[Survey])

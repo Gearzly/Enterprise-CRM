@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -13,13 +13,26 @@ from .config import (
     get_default_automation_type, get_default_trigger_type, get_max_conditions_per_rule
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/automation", tags=["automation"])
 
 # In-memory storage for demo purposes
 automation_rules_db = []
 workflows_db = []
 workflow_steps_db = []
 scheduled_tasks_db = []
+
+@router.get("/")
+def get_automation_dashboard():
+    """Get support automation dashboard with summary statistics"""
+    return {
+        "message": "Support Automation Dashboard",
+        "statistics": {
+            "total_rules": len(automation_rules_db),
+            "active_rules": len([r for r in automation_rules_db if r.is_active]),
+            "total_workflows": len(workflows_db),
+            "scheduled_tasks": len(scheduled_tasks_db)
+        }
+    }
 
 @router.get("/rules", response_model=List[AutomationRule])
 def list_automation_rules():
@@ -100,18 +113,18 @@ def pause_automation_rule(rule_id: int):
     raise HTTPException(status_code=404, detail="Automation rule not found")
 
 @router.get("/rules/type/{type}", response_model=List[AutomationRule])
-def get_rules_by_type(type: str):
+def get_automation_rules_by_type(type: str):
     """Get automation rules by type"""
     # Normalize the type parameter to handle case differences
     normalized_type = type.lower().title()
-    return [rule for rule in automation_rules_db if rule.type.value == normalized_type]
+    return [rule for rule in automation_rules_db if rule.type == normalized_type]
 
 @router.get("/rules/status/{status}", response_model=List[AutomationRule])
-def get_rules_by_status(status: str):
+def get_automation_rules_by_status(status: str):
     """Get automation rules by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [rule for rule in automation_rules_db if rule.status.value == normalized_status]
+    return [rule for rule in automation_rules_db if rule.status == normalized_status]
 
 @router.post("/rules/{rule_id}/trigger")
 def trigger_automation_rule(rule_id: int):

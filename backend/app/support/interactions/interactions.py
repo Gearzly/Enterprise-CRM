@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -10,13 +10,26 @@ from .config import (
     get_interaction_types, get_default_interaction_type, get_max_tags_per_interaction
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/interactions", tags=["interactions"])
 
 # In-memory storage for demo purposes
 interactions_db = []
 interaction_notes_db = []
 
-@router.get("/", response_model=List[Interaction])
+@router.get("/")
+def get_interactions_dashboard():
+    """Get support interactions dashboard with summary statistics"""
+    return {
+        "message": "Support Interactions Dashboard",
+        "statistics": {
+            "total_interactions": len(interactions_db),
+            "interactions_by_type": "Filtered by type",
+            "interactions_by_agent": "Filtered by agent",
+            "recent_interactions": "Available via customer endpoints"
+        }
+    }
+
+@router.get("/interactions", response_model=List[Interaction])
 def list_interactions():
     """List all interactions"""
     return interactions_db
@@ -74,8 +87,8 @@ def get_interactions_by_customer(customer_id: int):
 def get_interactions_by_type(type: str):
     """Get interactions by type"""
     # Normalize the type parameter to handle case differences
-    normalized_type = type.lower().title().replace("_", " ")
-    return [interaction for interaction in interactions_db if interaction.type.value == normalized_type]
+    normalized_type = type.lower().title()
+    return [interaction for interaction in interactions_db if interaction.type == normalized_type]
 
 @router.get("/agent/{agent_id}", response_model=List[Interaction])
 def get_interactions_by_agent(agent_id: str):

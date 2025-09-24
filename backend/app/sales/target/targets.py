@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from .models import (
-    Target, TargetCreate, TargetUpdate, TargetType, TargetPeriod
+    Target, TargetCreate, TargetUpdate
 )
 from .config import (
     get_target_periods, get_target_types
@@ -12,7 +12,7 @@ from .config import (
 from app.core.deps import get_db
 from app.core.crud import target as crud_target
 
-router = APIRouter()
+router = APIRouter(prefix="/targets", tags=["targets"])
 
 class SalesForecast(BaseModel):
     period: str
@@ -36,7 +36,20 @@ forecasts_db = [
     )
 ]
 
-@router.get("/", response_model=List[Target])
+@router.get("/")
+def get_targets_dashboard():
+    """Get sales targets dashboard with summary statistics"""
+    return {
+        "message": "Sales Targets Dashboard",
+        "statistics": {
+            "total_targets": "Available via list endpoint",
+            "targets_by_period": "Filtered by period",
+            "targets_by_type": "Filtered by type",
+            "forecasts": "Available via forecasts endpoint"
+        }
+    }
+
+@router.get("/targets", response_model=List[Target])
 def list_targets(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all targets"""
     targets = crud_target.get_multi(db, skip=skip, limit=limit)

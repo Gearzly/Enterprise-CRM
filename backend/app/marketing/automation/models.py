@@ -1,43 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class WorkflowStatus(str, Enum):
-    draft = "Draft"
-    active = "Active"
-    paused = "Paused"
-    completed = "Completed"
-    error = "Error"
-
-class TriggerType(str, Enum):
-    form_submission = "Form Submission"
-    email_open = "Email Open"
-    email_click = "Email Click"
-    website_visit = "Website Visit"
-    download = "Download"
-    purchase = "Purchase"
-    webinar_attendance = "Webinar Attendance"
-    custom_event = "Custom Event"
-
-class ActionType(str, Enum):
-    send_email = "Send Email"
-    update_contact = "Update Contact"
-    add_tag = "Add Tag"
-    remove_tag = "Remove Tag"
-    assign_owner = "Assign Owner"
-    send_notification = "Send Notification"
-    add_to_list = "Add to List"
-    remove_from_list = "Remove from List"
-    score_lead = "Score Lead"
-    create_task = "Create Task"
-    custom_action = "Custom Action"
+from pydantic import BaseModel
 
 class WorkflowBase(BaseModel):
     name: str
     description: Optional[str] = None
-    status: WorkflowStatus = WorkflowStatus.draft
-    trigger_type: TriggerType
+    status: str = "Draft"
+    trigger_type: str
     trigger_criteria: Dict[str, Any]  # JSON structure for trigger criteria
     is_active: bool = True
 
@@ -56,7 +26,7 @@ class Workflow(WorkflowBase):
 
 class WorkflowStepBase(BaseModel):
     workflow_id: int
-    action_type: ActionType
+    action_type: str
     action_config: Dict[str, Any]  # JSON structure for action configuration
     step_order: int
     delay_minutes: int = 0

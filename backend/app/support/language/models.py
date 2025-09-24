@@ -1,28 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class LanguageCode(str, Enum):
-    english = "en"
-    spanish = "es"
-    french = "fr"
-    german = "de"
-    italian = "it"
-    portuguese = "pt"
-    chinese = "zh"
-    japanese = "ja"
-    korean = "ko"
-    arabic = "ar"
-
-class TranslationStatus(str, Enum):
-    pending = "Pending"
-    translated = "Translated"
-    reviewed = "Reviewed"
-    published = "Published"
+# Removed LanguageCode enum
+# Removed TranslationStatus enum
 
 class SupportedLanguageBase(BaseModel):
-    code: LanguageCode
+    code: str  # Changed from LanguageCode to str
     name: str
     is_active: bool = True
     is_default: bool = False
@@ -53,7 +38,7 @@ class UITranslationUpdate(UITranslationBase):
 
 class UITranslation(UITranslationBase):
     id: int
-    status: TranslationStatus = TranslationStatus.pending
+    status: str = "Pending"  # Changed from TranslationStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     reviewed_at: Optional[datetime] = None
@@ -75,7 +60,7 @@ class ContentTranslationUpdate(ContentTranslationBase):
 
 class ContentTranslation(ContentTranslationBase):
     id: int
-    status: TranslationStatus = TranslationStatus.pending
+    status: str = "Pending"  # Changed from TranslationStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     translated_by: Optional[int] = None
@@ -103,7 +88,7 @@ class TranslationMemory(TranslationMemoryBase):
 
 class LanguageDetectionBase(BaseModel):
     text: str
-    detected_language: LanguageCode
+    detected_language: str  # Changed from LanguageCode to str
     confidence: float  # 0.0 to 1.0
 
 class LanguageDetectionCreate(LanguageDetectionBase):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -13,7 +13,7 @@ from .config import (
     get_default_integration_type, get_default_integration_platform, get_sync_frequency_minutes
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/integration", tags=["integration"])
 
 # In-memory storage for demo purposes
 integrations_db = []
@@ -21,7 +21,33 @@ integration_mappings_db = []
 sync_logs_db = []
 webhook_events_db = []
 
-@router.get("/", response_model=List[Integration])
+@router.get("/")
+def get_integration_dashboard():
+    """Get support integration dashboard with summary statistics"""
+    return {
+        "message": "Support Integration Dashboard",
+        "statistics": {
+            "total_integrations": len(integrations_db),
+            "active_integrations": len([i for i in integrations_db if i.is_active]),
+            "sync_logs": len(sync_logs_db),
+            "webhook_events": len(webhook_events_db)
+        }
+    }
+
+@router.get("/dashboard")
+def get_integration_dashboard():
+    """Get support integration dashboard with summary statistics"""
+    return {
+        "message": "Support Integration Dashboard",
+        "statistics": {
+            "total_integrations": len(integrations_db),
+            "active_integrations": len([i for i in integrations_db if i.is_active]),
+            "sync_logs": len(sync_logs_db),
+            "webhook_events": len(webhook_events_db)
+        }
+    }
+
+@router.get("/integrations", response_model=List[Integration])
 def list_integrations():
     """List all integrations"""
     return integrations_db
@@ -136,21 +162,21 @@ def get_integrations_by_type(type: str):
     """Get integrations by type"""
     # Normalize the type parameter to handle case differences
     normalized_type = type.lower().title()
-    return [integration for integration in integrations_db if integration.type.value == normalized_type]
+    return [integration for integration in integrations_db if integration.type == normalized_type]
 
 @router.get("/platform/{platform}", response_model=List[Integration])
 def get_integrations_by_platform(platform: str):
     """Get integrations by platform"""
     # Normalize the platform parameter to handle case differences
-    normalized_platform = platform.lower().title().replace("_", " ")
-    return [integration for integration in integrations_db if integration.platform.value == normalized_platform]
+    normalized_platform = platform.lower().title()
+    return [integration for integration in integrations_db if integration.platform == normalized_platform]
 
 @router.get("/status/{status}", response_model=List[Integration])
 def get_integrations_by_status(status: str):
     """Get integrations by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [integration for integration in integrations_db if integration.status.value == normalized_status]
+    return [integration for integration in integrations_db if integration.status == normalized_status]
 
 # Integration Mapping endpoints
 @router.get("/mappings", response_model=List[IntegrationMapping])

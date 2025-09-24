@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -108,12 +108,12 @@ def get_devices_by_user(user_id: int):
     """Get mobile devices by user ID"""
     return [device for device in mobile_devices_db if device.user_id == user_id]
 
-@router.get("/devices/type/{device_type}", response_model=List[MobileDevice])
-def get_devices_by_type(device_type: str):
+@router.get("/devices/type/{type}", response_model=List[MobileDevice])
+def get_mobile_devices_by_type(type: str):
     """Get mobile devices by type"""
     # Normalize the type parameter to handle case differences
-    normalized_type = device_type.lower().title()
-    return [device for device in mobile_devices_db if device.device_type.value == normalized_type]
+    normalized_type = type.lower().title()
+    return [device for device in mobile_devices_db if device.device_type == normalized_type]
 
 # Mobile Ticket endpoints
 @router.get("/tickets", response_model=List[MobileTicket])
@@ -186,11 +186,11 @@ def get_tickets_by_customer(customer_id: int):
     return [ticket for ticket in mobile_tickets_db if ticket.customer_id == customer_id]
 
 @router.get("/tickets/status/{status}", response_model=List[MobileTicket])
-def get_tickets_by_status(status: str):
+def get_mobile_tickets_by_status(status: str):
     """Get mobile tickets by status"""
     # Normalize the status parameter to handle case differences
-    normalized_status = status.lower().title().replace("_", " ")
-    return [ticket for ticket in mobile_tickets_db if ticket.status.value == normalized_status]
+    normalized_status = status.lower().title()
+    return [ticket for ticket in mobile_tickets_db if ticket.status == normalized_status]
 
 # Mobile Notification endpoints
 @router.get("/notifications", response_model=List[MobileNotification])

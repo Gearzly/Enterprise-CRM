@@ -1,31 +1,18 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class CallDirection(str, Enum):
-    inbound = "Inbound"
-    outbound = "Outbound"
-
-class CallStatus(str, Enum):
-    pending = "Pending"
-    ringing = "Ringing"
-    in_progress = "In Progress"
-    completed = "Completed"
-    missed = "Missed"
-    voicemail = "Voicemail"
-
-class CallPriority(str, Enum):
-    low = "Low"
-    medium = "Medium"
-    high = "High"
+# Removed CallDirection enum
+# Removed CallStatus enum
+# Removed CallPriority enum
 
 class CallBase(BaseModel):
     customer_id: int
-    direction: CallDirection
+    direction: str  # Changed from CallDirection to str
     from_number: str
     to_number: str
-    priority: CallPriority = CallPriority.medium
+    priority: str = "Medium"  # Changed from CallPriority to str
     assigned_agent_id: Optional[str] = None
     tags: List[str] = []
 
@@ -37,7 +24,7 @@ class CallUpdate(CallBase):
 
 class Call(CallBase):
     id: int
-    status: CallStatus = CallStatus.pending
+    status: str = "Pending"  # Changed from CallStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     answered_at: Optional[datetime] = None

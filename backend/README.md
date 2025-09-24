@@ -240,7 +240,7 @@ python start_server.py
 uvicorn app.main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`.
+The API will be available at `http://localhost:8001`.
 
 ## Testing
 
@@ -260,7 +260,7 @@ This will test all available endpoints and report which ones are working correct
 
 Once the application is running, you can access the following documentation:
 
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
+- **Swagger UI**: `http://localhost:8001/docs`
+- **ReDoc**: `http://localhost:8001/redoc`
 
 These provide interactive API documentation and testing capabilities.

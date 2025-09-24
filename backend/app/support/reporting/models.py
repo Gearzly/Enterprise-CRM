@@ -1,34 +1,17 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class ReportType(str, Enum):
-    ticket_metrics = "Ticket Metrics"
-    agent_performance = "Agent Performance"
-    customer_satisfaction = "Customer Satisfaction"
-    response_time = "Response Time"
-    resolution_time = "Resolution Time"
-    sla_compliance = "SLA Compliance"
-
-class ReportStatus(str, Enum):
-    pending = "Pending"
-    generating = "Generating"
-    completed = "Completed"
-    failed = "Failed"
-
-class ReportFrequency(str, Enum):
-    daily = "Daily"
-    weekly = "Weekly"
-    monthly = "Monthly"
-    quarterly = "Quarterly"
-    yearly = "Yearly"
+# Removed ReportType enum
+# Removed ReportStatus enum
+# Removed ReportFrequency enum
 
 class ReportBase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: ReportType
-    frequency: ReportFrequency
+    type: str  # Changed from ReportType to str
+    frequency: str  # Changed from ReportFrequency to str
     is_active: bool = True
 
 class ReportCreate(ReportBase):
@@ -39,7 +22,7 @@ class ReportUpdate(ReportBase):
 
 class Report(ReportBase):
     id: int
-    status: ReportStatus = ReportStatus.pending
+    status: str = "Pending"  # Changed from ReportStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     last_generated_at: Optional[datetime] = None

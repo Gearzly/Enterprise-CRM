@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -11,12 +12,27 @@ from .config import (
     get_article_categories, get_default_category, get_max_tags_per_article
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/knowledge-base", tags=["knowledge-base"])
 
 # In-memory storage for demo purposes
 articles_db = []
 categories_db = []
 feedback_db = []
+
+@router.get("/")
+def get_knowledge_base_dashboard():
+    """Get knowledge base dashboard with summary statistics"""
+    published_articles = len([a for a in articles_db if a.is_published])
+    return {
+        "message": "Support Knowledge Base Dashboard",
+        "statistics": {
+            "total_articles": len(articles_db),
+            "published_articles": published_articles,
+            "draft_articles": len(articles_db) - published_articles,
+            "total_categories": len(categories_db),
+            "total_feedback": len(feedback_db)
+        }
+    }
 
 @router.get("/articles", response_model=List[Article])
 def list_articles():

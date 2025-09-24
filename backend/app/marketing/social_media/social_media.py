@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
 from .models import (
     SocialPost, SocialPostCreate, SocialPostUpdate,
     SocialListeningKeyword, SocialListeningKeywordCreate, SocialListeningKeywordUpdate,
@@ -15,7 +15,7 @@ from .config import (
     get_default_engagement_count
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/social-media", tags=["social-media"])
 
 # In-memory storage for demo purposes
 social_posts_db = []
@@ -23,6 +23,20 @@ social_keywords_db = []
 social_mentions_db = []
 social_engagements_db = []
 influencers_db = []
+
+@router.get("/")
+def get_social_media_dashboard():
+    """Get social media dashboard with summary statistics"""
+    return {
+        "message": "Social Media Dashboard",
+        "statistics": {
+            "total_posts": len(social_posts_db),
+            "total_keywords": len(social_keywords_db),
+            "total_mentions": len(social_mentions_db),
+            "total_engagements": len(social_engagements_db),
+            "total_influencers": len(influencers_db)
+        }
+    }
 
 @router.get("/posts", response_model=List[SocialPost])
 def list_social_posts():
@@ -84,14 +98,14 @@ def get_social_posts_by_status(status: str):
     """Get social posts by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [post for post in social_posts_db if post.status.value == normalized_status]
+    return [post for post in social_posts_db if post.status == normalized_status]
 
 @router.get("/posts/platform/{platform}", response_model=List[SocialPost])
 def get_social_posts_by_platform(platform: str):
     """Get social posts by platform"""
     # Normalize the platform parameter to handle case differences
     normalized_platform = platform.lower().title()
-    return [post for post in social_posts_db if post.platform.value == normalized_platform]
+    return [post for post in social_posts_db if post.platform == normalized_platform]
 
 @router.post("/posts/{post_id}/publish")
 def publish_social_post(post_id: int):

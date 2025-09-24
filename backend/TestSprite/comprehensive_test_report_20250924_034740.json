@@ -1,0 +1,789 @@
+{
+  "test_execution_summary": {
+    "timestamp": "2025-09-24T03:47:40.295572",
+    "test_duration_seconds": 306.61239075660706,
+    "base_url": "http://localhost:5173",
+    "total_test_suites": 5,
+    "successful_suites": 4
+  },
+  "overall_metrics": {
+    "total_tests": 33,
+    "total_passed": 18,
+    "total_failed": 15,
+    "overall_pass_rate": "54.5%",
+    "system_status": "POOR"
+  },
+  "suite_summaries": {
+    "backend_functionality": {
+      "status": "COMPLETED",
+      "tests": 13,
+      "passed": 8,
+      "pass_rate": "61.5%"
+    },
+    "oauth2_migration": {
+      "status": "ISSUES_FOUND",
+      "tests": 11,
+      "passed": 4,
+      "pass_rate": "36.4%"
+    },
+    "security_validation": {
+      "status": "COMPLETED",
+      "tests": 9,
+      "passed": 6,
+      "security_score": "100.0%",
+      "security_level": "EXCELLENT"
+    },
+    "performance": {
+      "status": "COMPLETED",
+      "performance_score": "NO_DATA",
+      "avg_response_time": null,
+      "endpoints_tested": 7
+    },
+    "integration": {
+      "status": "COMPLETED",
+      "integration_score": "0.0%",
+      "passed_tests": 0,
+      "total_tests": 4
+    }
+  },
+  "detailed_results": {
+    "backend_functionality": {
+      "total_tests": 13,
+      "passed": 8,
+      "failed": 5,
+      "pass_rate": "61.5%",
+      "total_duration": 86.80763959884644,
+      "results": [
+        {
+          "test_name": "Health Check",
+          "status": "FAIL",
+          "duration": "2.80s",
+          "message": "All connection attempts failed",
+          "details": {
+            "error": "All connection attempts failed",
+            "type": "ConnectError"
+          }
+        },
+        {
+          "test_name": "Root Endpoint",
+          "status": "FAIL",
+          "duration": "3.23s",
+          "message": "All connection attempts failed",
+          "details": {
+            "error": "All connection attempts failed",
+            "type": "ConnectError"
+          }
+        },
+        {
+          "test_name": "Security Headers",
+          "status": "FAIL",
+          "duration": "3.08s",
+          "message": "All connection attempts failed",
+          "details": {
+            "error": "All connection attempts failed",
+            "type": "ConnectError"
+          }
+        },
+        {
+          "test_name": "API Documentation",
+          "status": "PASS",
+          "duration": "7.70s",
+          "message": "Test passed successfully",
+          "details": {
+            "/docs": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/redoc": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/openapi.json": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "Performance Metrics",
+          "status": "PASS",
+          "duration": "7.87s",
+          "message": "Test passed successfully",
+          "details": {
+            "/": {
+              "response_time": 2.3049604892730713,
+              "error": "All connection attempts failed",
+              "performance": "failed"
+            },
+            "/health": {
+              "response_time": 2.3092424869537354,
+              "error": "All connection attempts failed",
+              "performance": "failed"
+            },
+            "/auth/challenge": {
+              "response_time": 2.300515651702881,
+              "error": "All connection attempts failed",
+              "performance": "failed"
+            }
+          }
+        },
+        {
+          "test_name": "OAuth2 PKCE Challenge",
+          "status": "FAIL",
+          "duration": "2.29s",
+          "message": "All connection attempts failed",
+          "details": {
+            "error": "All connection attempts failed",
+            "type": "ConnectError"
+          }
+        },
+        {
+          "test_name": "OAuth2 Authentication",
+          "status": "FAIL",
+          "duration": "2.29s",
+          "message": "All connection attempts failed",
+          "details": {
+            "error": "All connection attempts failed",
+            "type": "ConnectError"
+          }
+        },
+        {
+          "test_name": "Sales Endpoints",
+          "status": "PASS",
+          "duration": "11.51s",
+          "message": "Test passed successfully",
+          "details": {
+            "/sales/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/sales/leads": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/sales/opportunities": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/sales/contacts": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/sales/activities": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "Marketing Endpoints",
+          "status": "PASS",
+          "duration": "11.50s",
+          "message": "Test passed successfully",
+          "details": {
+            "/marketing/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/marketing/campaigns": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/marketing/leads": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/marketing/analytics": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/marketing/automation": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "Support Endpoints",
+          "status": "PASS",
+          "duration": "11.52s",
+          "message": "Test passed successfully",
+          "details": {
+            "/support/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/support/tickets": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/support/knowledge-base": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/support/live-chat": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/support/social-support": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "SuperAdmin Endpoints",
+          "status": "PASS",
+          "duration": "9.22s",
+          "message": "Test passed successfully",
+          "details": {
+            "/api/superadmin": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/superadmin/users": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/superadmin/dashboard": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/superadmin/settings": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "Compliance Endpoints",
+          "status": "PASS",
+          "duration": "6.88s",
+          "message": "Test passed successfully",
+          "details": {
+            "/api/compliance/retention": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/compliance/deletion": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/compliance/consent": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        },
+        {
+          "test_name": "Security Endpoints",
+          "status": "PASS",
+          "duration": "6.90s",
+          "message": "Test passed successfully",
+          "details": {
+            "/api/security/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/audit/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            },
+            "/api/data/": {
+              "status_code": null,
+              "error": "All connection attempts failed",
+              "accessible": false
+            }
+          }
+        }
+      ]
+    },
+    "oauth2_migration": {
+      "migration_test_summary": {
+        "total_tests": 11,
+        "passed": 4,
+        "failed": 7,
+        "pass_rate": "36.4%",
+        "total_duration": 52.74701976776123
+      },
+      "detailed_results": [
+        {
+          "name": "OAuth2 PKCE Challenge Generation",
+          "status": "FAIL",
+          "duration": 2.2985680103302,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "OAuth2 Password Flow",
+          "status": "FAIL",
+          "duration": 2.3315236568450928,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "PKCE Challenge Verification",
+          "status": "PASS",
+          "duration": 0.0014235973358154297,
+          "result": {
+            "verifier_length": 43,
+            "challenge_length": 43,
+            "unique_generation": true,
+            "s256_method_working": true
+          }
+        },
+        {
+          "name": "JWT Deprecation",
+          "status": "PASS",
+          "duration": 11.453004837036133,
+          "result": {
+            "/auth/jwt/login": {
+              "status_code": null,
+              "deprecated": true,
+              "error": "All connection attempts failed"
+            },
+            "/auth/jwt/refresh": {
+              "status_code": null,
+              "deprecated": true,
+              "error": "All connection attempts failed"
+            },
+            "/auth/jwt/verify": {
+              "status_code": null,
+              "deprecated": true,
+              "error": "All connection attempts failed"
+            },
+            "/api/auth/jwt": {
+              "status_code": null,
+              "deprecated": true,
+              "error": "All connection attempts failed"
+            },
+            "openapi_jwt_references": "docs_error"
+          }
+        },
+        {
+          "name": "OAuth2 Token Validation",
+          "status": "FAIL",
+          "duration": 2.3043582439422607,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "OAuth2 Scopes",
+          "status": "PASS",
+          "duration": 13.775585174560547,
+          "result": {
+            "read": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            },
+            "write": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            },
+            "admin": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            },
+            "sales": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            },
+            "marketing": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            },
+            "support": {
+              "status_code": null,
+              "scope_supported": false,
+              "error": "All connection attempts failed"
+            }
+          }
+        },
+        {
+          "name": "OAuth2 Middleware Integration",
+          "status": "FAIL",
+          "duration": 2.295475721359253,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "OAuth2 Client Configuration",
+          "status": "FAIL",
+          "duration": 2.2977724075317383,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "Error Handling",
+          "status": "PASS",
+          "duration": 6.878918409347534,
+          "result": {
+            "invalid_grant_type": {
+              "error": "All connection attempts failed"
+            },
+            "missing_client_id": {
+              "error": "All connection attempts failed"
+            },
+            "invalid_endpoint": {
+              "error": "All connection attempts failed"
+            }
+          }
+        },
+        {
+          "name": "Security Improvements",
+          "status": "FAIL",
+          "duration": 2.2844462394714355,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "Migration Completeness",
+          "status": "FAIL",
+          "duration": 6.825943470001221,
+          "error": "All connection attempts failed"
+        }
+      ],
+      "migration_status": "ISSUES_FOUND"
+    },
+    "security_validation": {
+      "security_test_summary": {
+        "total_tests": 9,
+        "passed": 6,
+        "failed": 3,
+        "pass_rate": "66.7%",
+        "overall_security_score": "100.0%",
+        "security_level": "EXCELLENT"
+      },
+      "detailed_results": [
+        {
+          "name": "OWASP Security Headers",
+          "status": "FAIL",
+          "duration": 2.281170129776001,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "Input Validation",
+          "status": "PASS",
+          "duration": 18.312094926834106,
+          "result": {
+            "sql_injection_test_1": {
+              "payload": "'; DROP TABLE users; --",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "sql_injection_test_2": {
+              "payload": "1' OR '1'='1",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "sql_injection_test_3": {
+              "payload": "admin'; --",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "sql_injection_test_4": {
+              "payload": "' UNION SELECT * FROM users --",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "xss_test_1": {
+              "payload": "<script>alert('xss')</script>",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "xss_test_2": {
+              "payload": "javascript:alert('xss')",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "xss_test_3": {
+              "payload": "<img src=x onerror=alert('xss')>",
+              "error": "All connection attempts failed",
+              "blocked": true
+            },
+            "xss_test_4": {
+              "payload": "';alert(String.fromCharCode(88,83,83))//'",
+              "error": "All connection attempts failed",
+              "blocked": true
+            }
+          }
+        },
+        {
+          "name": "Authentication Security",
+          "status": "PASS",
+          "duration": 20.62630820274353,
+          "result": {
+            "brute_force_protection": {
+              "attempts": [
+                {
+                  "attempt": 1,
+                  "error": "All connection attempts failed"
+                },
+                {
+                  "attempt": 2,
+                  "error": "All connection attempts failed"
+                },
+                {
+                  "attempt": 3,
+                  "error": "All connection attempts failed"
+                },
+                {
+                  "attempt": 4,
+                  "error": "All connection attempts failed"
+                },
+                {
+                  "attempt": 5,
+                  "error": "All connection attempts failed"
+                }
+              ],
+              "rate_limiting_detected": false
+            },
+            "password_policy": [
+              {
+                "password": "123",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "password": "password",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "password": "admin",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "password": "",
+                "error": "All connection attempts failed",
+                "rejected": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Authorization Controls",
+          "status": "PASS",
+          "duration": 20.573658227920532,
+          "result": {
+            "unauthorized_access": [
+              {
+                "endpoint": "/api/superadmin",
+                "error": "All connection attempts failed",
+                "protected": true
+              },
+              {
+                "endpoint": "/api/superadmin/users",
+                "error": "All connection attempts failed",
+                "protected": true
+              },
+              {
+                "endpoint": "/api/superadmin/settings",
+                "error": "All connection attempts failed",
+                "protected": true
+              },
+              {
+                "endpoint": "/api/security",
+                "error": "All connection attempts failed",
+                "protected": true
+              },
+              {
+                "endpoint": "/api/audit",
+                "error": "All connection attempts failed",
+                "protected": true
+              }
+            ],
+            "invalid_token_tests": [
+              {
+                "token": "invalid_token",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "token": "Bearer invalid",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "token": "fake.jwt.token",
+                "error": "All connection attempts failed",
+                "rejected": true
+              },
+              {
+                "token": "",
+                "error": "All connection attempts failed",
+                "rejected": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "CORS Configuration",
+          "status": "FAIL",
+          "duration": 2.2948226928710938,
+          "error": "All connection attempts failed"
+        },
+        {
+          "name": "Rate Limiting",
+          "status": "PASS",
+          "duration": 45.762126207351685,
+          "result": {
+            "rapid_requests": {
+              "total_requests": 20,
+              "successful_requests": 0,
+              "rate_limited_requests": 0,
+              "rate_limiting_active": false,
+              "total_duration": 45.761934757232666
+            }
+          }
+        },
+        {
+          "name": "SSL/TLS Security",
+          "status": "PASS",
+          "duration": 4.574126243591309,
+          "result": {
+            "http_test_error": "All connection attempts failed",
+            "cookie_test_error": "All connection attempts failed"
+          }
+        },
+        {
+          "name": "Data Exposure",
+          "status": "PASS",
+          "duration": 9.142441511154175,
+          "result": {
+            "error_message_analysis": [
+              {
+                "endpoint": "/api/nonexistent",
+                "error": "All connection attempts failed"
+              },
+              {
+                "endpoint": "/api/superadmin/invalid",
+                "error": "All connection attempts failed"
+              },
+              {
+                "endpoint": "/auth/invalid",
+                "error": "All connection attempts failed"
+              }
+            ],
+            "api_docs_error": "All connection attempts failed"
+          }
+        },
+        {
+          "name": "Security Logging",
+          "status": "FAIL",
+          "duration": 2.289156913757324,
+          "error": "All connection attempts failed"
+        }
+      ]
+    },
+    "performance": {
+      "endpoint_tests": {
+        "/": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/health": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/auth/challenge": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/api/superadmin": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/sales/": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/marketing/": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        },
+        "/support/": {
+          "error": "All connection attempts failed",
+          "accessible": false
+        }
+      },
+      "overall_avg_response_time": null,
+      "performance_score": "NO_DATA",
+      "total_endpoints_tested": 7,
+      "successful_endpoints": 0
+    },
+    "integration": {
+      "test_results": {
+        "server_health": {
+          "error": "All connection attempts failed",
+          "healthy": false
+        },
+        "api_documentation": {
+          "error": "All connection attempts failed"
+        },
+        "module_integration": {
+          "Sales": {
+            "error": "All connection attempts failed",
+            "integrated": false
+          },
+          "Marketing": {
+            "error": "All connection attempts failed",
+            "integrated": false
+          },
+          "Support": {
+            "error": "All connection attempts failed",
+            "integrated": false
+          },
+          "SuperAdmin": {
+            "error": "All connection attempts failed",
+            "integrated": false
+          },
+          "Authentication": {
+            "error": "All connection attempts failed",
+            "integrated": false
+          }
+        },
+        "database_integration": {
+          "error": "All connection attempts failed"
+        }
+      },
+      "integration_score": "0.0%",
+      "passed_tests": 0,
+      "total_tests": 4
+    }
+  },
+  "recommendations": [
+    "\u26a0\ufe0f CRITICAL: Overall pass rate is below 80%. Immediate attention required.",
+    "\ud83d\udd10 OAUTH2: Complete OAuth2+PKCE migration issues identified. Review migration test results.",
+    "\ud83d\udd17 INTEGRATION: Fix module integration issues identified in integration tests.",
+    "\ud83d\udcca MONITORING: Set up continuous monitoring for all validated endpoints.",
+    "\ud83d\udd04 AUTOMATION: Consider automating these tests in your CI/CD pipeline."
+  ]
+}

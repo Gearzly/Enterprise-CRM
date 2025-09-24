@@ -3,7 +3,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from .models import (
-    Contact, ContactCreate, ContactUpdate, ContactType
+    Contact, ContactCreate, ContactUpdate
 )
 from .config import (
     get_contact_types
@@ -11,9 +11,22 @@ from .config import (
 from app.core.deps import get_db
 from app.core.crud import contact as crud_contact
 
-router = APIRouter()
+router = APIRouter(prefix="/contacts", tags=["contacts"])
 
-@router.get("/", response_model=List[Contact])
+@router.get("/")
+def get_contacts_dashboard():
+    """Get sales contacts dashboard with summary statistics"""
+    return {
+        "message": "Sales Contacts Dashboard",
+        "statistics": {
+            "total_contacts": "Available via list endpoint",
+            "contacts_by_type": "Filtered by type",
+            "contacts_by_company": "Filtered by company",
+            "recent_contacts": "Available via recent endpoint"
+        }
+    }
+
+@router.get("/contacts", response_model=List[Contact])
 def list_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """List all contacts"""
     contacts = crud_contact.get_multi(db, skip=skip, limit=limit)

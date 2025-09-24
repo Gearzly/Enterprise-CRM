@@ -1,28 +1,16 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class EmailStatus(str, Enum):
-    draft = "Draft"
-    scheduled = "Scheduled"
-    sending = "Sending"
-    sent = "Sent"
-    failed = "Failed"
-
-class EmailTemplateCategory(str, Enum):
-    newsletter = "Newsletter"
-    promotional = "Promotional"
-    transactional = "Transactional"
-    welcome = "Welcome"
-    abandoned_cart = "Abandoned Cart"
-    other = "Other"
+from pydantic import BaseModel
 
 class EmailListBase(BaseModel):
     name: str
     description: Optional[str] = None
     is_active: bool = True
     tags: List[str] = []
+
+    class Config:
+        from_attributes = True
 
 class EmailListCreate(EmailListBase):
     pass
@@ -44,6 +32,9 @@ class EmailSubscriberBase(BaseModel):
     tags: List[str] = []
     is_subscribed: bool = True
 
+    class Config:
+        from_attributes = True
+
 class EmailSubscriberCreate(EmailSubscriberBase):
     pass
 
@@ -59,8 +50,11 @@ class EmailTemplateBase(BaseModel):
     name: str
     subject: str
     content: str  # HTML content
-    category: EmailTemplateCategory = EmailTemplateCategory.newsletter
+    category: str = "Newsletter"
     is_active: bool = True
+
+    class Config:
+        from_attributes = True
 
 class EmailTemplateCreate(EmailTemplateBase):
     pass
@@ -78,10 +72,13 @@ class EmailCampaignBase(BaseModel):
     subject: str
     template_id: int
     list_ids: List[int] = []
-    status: EmailStatus = EmailStatus.draft
+    status: str = "Draft"
     scheduled_at: Optional[datetime] = None
     sent_at: Optional[datetime] = None
     tags: List[str] = []
+
+    class Config:
+        from_attributes = True
 
 class EmailCampaignCreate(EmailCampaignBase):
     pass
@@ -104,6 +101,9 @@ class EmailSequenceBase(BaseModel):
     is_active: bool = True
     tags: List[str] = []
 
+    class Config:
+        from_attributes = True
+
 class EmailSequenceCreate(EmailSequenceBase):
     pass
 
@@ -121,6 +121,9 @@ class EmailSequenceStepBase(BaseModel):
     email_template_id: int
     delay_days: int
     step_order: int
+
+    class Config:
+        from_attributes = True
 
 class EmailSequenceStepCreate(EmailSequenceStepBase):
     pass

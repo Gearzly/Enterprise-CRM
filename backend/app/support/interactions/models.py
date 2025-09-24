@@ -1,19 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class InteractionType(str, Enum):
-    call = "Call"
-    email = "Email"
-    chat = "Chat"
-    meeting = "Meeting"
-    note = "Note"
-    follow_up = "Follow Up"
+# Removed InteractionType enum
 
 class InteractionBase(BaseModel):
     customer_id: int
-    type: InteractionType
+    type: str  # Changed from InteractionType to str
     subject: str
     description: Optional[str] = None
     agent_id: Optional[str] = None

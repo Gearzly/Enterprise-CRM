@@ -13,7 +13,9 @@ if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=5173,  # Changed to 5173 for TestSprite compatibility
         reload=True,
-        log_level="info"
+        log_level="info",
+        timeout_keep_alive=60,  # Increase keep-alive timeout
+        timeout_graceful_shutdown=30  # Graceful shutdown timeout
     )

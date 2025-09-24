@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -193,12 +193,12 @@ def get_ui_translations_by_key(key: str):
     """Get UI translations by key"""
     return [translation for translation in ui_translations_db if translation.key == key]
 
-@router.get("/ui/status/{status}", response_model=List[UITranslation])
+@router.get("/translations/status/{status}", response_model=List[UITranslation])
 def get_ui_translations_by_status(status: str):
     """Get UI translations by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [translation for translation in ui_translations_db if translation.status.value == normalized_status]
+    return [translation for translation in ui_translations_db if translation.status == normalized_status]
 
 # Content Translation endpoints
 @router.get("/content", response_model=List[ContentTranslation])

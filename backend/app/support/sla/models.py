@@ -1,22 +1,15 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class SLAType(str, Enum):
-    response = "Response"
-    resolution = "Resolution"
-    first_response = "First Response"
-
-class SLAStatus(str, Enum):
-    active = "Active"
-    inactive = "Inactive"
-    archived = "Archived"
+# Removed SLAType enum
+# Removed SLAStatus enum
 
 class SLABase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: SLAType
+    type: str  # Changed from SLAType to str
     response_time_hours: int
     resolution_time_hours: Optional[int] = None
     is_active: bool = True

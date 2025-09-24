@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -14,7 +14,7 @@ from .config import (
     get_default_report_frequency, get_default_report_type, get_max_data_points_per_report
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/reporting", tags=["reporting"])
 
 # In-memory storage for demo purposes
 reports_db = []
@@ -22,6 +22,19 @@ report_data_points_db = []
 dashboards_db = []
 dashboard_widgets_db = []
 metrics_db = []
+
+@router.get("/")
+def get_reporting_dashboard():
+    """Get support reporting dashboard with summary statistics"""
+    return {
+        "message": "Support Reporting Dashboard",
+        "statistics": {
+            "total_reports": len(reports_db),
+            "dashboards": len(dashboards_db),
+            "active_metrics": len([m for m in metrics_db if m.is_active]),
+            "widgets": len(dashboard_widgets_db)
+        }
+    }
 
 @router.get("/reports", response_model=List[Report])
 def list_reports():
@@ -98,21 +111,21 @@ def get_reports_by_type(type: str):
     """Get reports by type"""
     # Normalize the type parameter to handle case differences
     normalized_type = type.lower().title()
-    return [report for report in reports_db if report.type.value == normalized_type]
+    return [report for report in reports_db if report.type == normalized_type]
 
 @router.get("/reports/frequency/{frequency}", response_model=List[Report])
 def get_reports_by_frequency(frequency: str):
     """Get reports by frequency"""
     # Normalize the frequency parameter to handle case differences
     normalized_frequency = frequency.lower().title()
-    return [report for report in reports_db if report.frequency.value == normalized_frequency]
+    return [report for report in reports_db if report.frequency == normalized_frequency]
 
 @router.get("/reports/status/{status}", response_model=List[Report])
 def get_reports_by_status(status: str):
     """Get reports by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [report for report in reports_db if report.status.value == normalized_status]
+    return [report for report in reports_db if report.status == normalized_status]
 
 # Report Data Point endpoints
 @router.get("/data-points", response_model=List[ReportDataPoint])

@@ -1,19 +1,10 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class CommunityPostType(str, Enum):
-    discussion = "Discussion"
-    question = "Question"
-    announcement = "Announcement"
-    tutorial = "Tutorial"
-
-class CommunityPostStatus(str, Enum):
-    draft = "Draft"
-    published = "Published"
-    archived = "Archived"
-    deleted = "Deleted"
+# Removed CommunityPostType enum
+# Removed CommunityPostStatus enum
 
 class CommunityCategoryBase(BaseModel):
     name: str
@@ -35,7 +26,7 @@ class CommunityPostBase(BaseModel):
     title: str
     content: str
     category_id: int
-    post_type: CommunityPostType = CommunityPostType.discussion
+    post_type: str = "Discussion"  # Changed from CommunityPostType to str
     author_id: int
     tags: List[str] = []
 
@@ -47,7 +38,7 @@ class CommunityPostUpdate(CommunityPostBase):
 
 class CommunityPost(CommunityPostBase):
     id: int
-    status: CommunityPostStatus = CommunityPostStatus.published
+    status: str = "Published"  # Changed from CommunityPostStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     published_at: Optional[datetime] = None

@@ -1,33 +1,19 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 
-class BudgetStatus(str, Enum):
-    draft = "Draft"
-    approved = "Approved"
-    active = "Active"
-    completed = "Completed"
-    cancelled = "Cancelled"
 
-class BudgetCategory(str, Enum):
-    campaigns = "Campaigns"
-    content = "Content"
-    events = "Events"
-    technology = "Technology"
-    personnel = "Personnel"
-    agency = "Agency Fees"
-    other = "Other"
+
 
 class MarketingBudgetBase(BaseModel):
     name: str
     description: Optional[str] = None
-    category: BudgetCategory
+    category: str
     allocated_amount: float
     spent_amount: float = 0.0
     start_date: datetime
     end_date: datetime
-    status: BudgetStatus = BudgetStatus.draft
+    status: str = "Draft"
     approver: Optional[str] = None
     notes: Optional[str] = None
 
@@ -44,28 +30,15 @@ class MarketingBudget(MarketingBudgetBase):
     created_at: datetime
     updated_at: Optional[datetime] = None
 
-class AssetType(str, Enum):
-    image = "Image"
-    video = "Video"
-    document = "Document"
-    template = "Template"
-    brand_asset = "Brand Asset"
-    other = "Other"
 
-class AssetStatus(str, Enum):
-    draft = "Draft"
-    review = "Review"
-    approved = "Approved"
-    published = "Published"
-    archived = "Archived"
 
 class MarketingAssetBase(BaseModel):
     name: str
     description: Optional[str] = None
-    asset_type: AssetType
+    asset_type: str
     file_url: str
     file_size: Optional[int] = None
-    status: AssetStatus = AssetStatus.draft
+    status: str = "Draft"
     tags: List[str] = []
     version: str = "1.0"
     owner: Optional[str] = None
@@ -86,7 +59,7 @@ class MarketingAsset(MarketingAssetBase):
 class ApprovalWorkflowBase(BaseModel):
     name: str
     description: Optional[str] = None
-    asset_type: AssetType
+    asset_type: str
     approvers: List[str] = []  # List of user IDs or roles
     steps: List[Dict[str, Any]] = []  # JSON structure for workflow steps
     is_active: bool = True

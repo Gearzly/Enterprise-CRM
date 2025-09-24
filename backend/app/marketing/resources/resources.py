@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     MarketingBudget, MarketingBudgetCreate, MarketingBudgetUpdate,
     MarketingAsset, MarketingAssetCreate, MarketingAssetUpdate,
@@ -89,14 +88,14 @@ def get_marketing_budgets_by_status(status: str):
     """Get marketing budgets by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [budget for budget in marketing_budgets_db if budget.status.value == normalized_status]
+    return [budget for budget in marketing_budgets_db if budget.status == normalized_status]
 
 @router.get("/budgets/category/{category}", response_model=List[MarketingBudget])
 def get_marketing_budgets_by_category(category: str):
     """Get marketing budgets by category"""
     # Normalize the category parameter to handle case differences
     normalized_category = category.lower().title()
-    return [budget for budget in marketing_budgets_db if budget.category.value == normalized_category]
+    return [budget for budget in marketing_budgets_db if budget.category == normalized_category]
 
 @router.post("/budgets/{budget_id}/approve")
 def approve_marketing_budget(budget_id: int):
@@ -169,14 +168,14 @@ def get_marketing_assets_by_type(asset_type: str):
     """Get marketing assets by type"""
     # Normalize the asset_type parameter to handle case differences
     normalized_type = asset_type.lower().title()
-    return [asset for asset in marketing_assets_db if asset.asset_type.value == normalized_type]
+    return [asset for asset in marketing_assets_db if asset.asset_type == normalized_type]
 
 @router.get("/assets/status/{status}", response_model=List[MarketingAsset])
 def get_marketing_assets_by_status(status: str):
     """Get marketing assets by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [asset for asset in marketing_assets_db if asset.status.value == normalized_status]
+    return [asset for asset in marketing_assets_db if asset.status == normalized_status]
 
 @router.post("/assets/{asset_id}/download")
 def download_marketing_asset(asset_id: int):

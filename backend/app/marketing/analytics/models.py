@@ -1,35 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class ReportType(str, Enum):
-    campaign_performance = "Campaign Performance"
-    lead_generation = "Lead Generation"
-    email_marketing = "Email Marketing"
-    social_media = "Social Media"
-    content_performance = "Content Performance"
-    roi_dashboard = "ROI Dashboard"
-    conversion_tracking = "Conversion Tracking"
-    attribution_modeling = "Attribution Modeling"
-    customer_lifetime_value = "Customer Lifetime Value"
-    channel_performance = "Channel Performance"
-
-class ReportFrequency(str, Enum):
-    daily = "Daily"
-    weekly = "Weekly"
-    monthly = "Monthly"
-    quarterly = "Quarterly"
-    yearly = "Yearly"
-    custom = "Custom"
-
-class AttributionModel(str, Enum):
-    first_touch = "First Touch"
-    last_touch = "Last Touch"
-    linear = "Linear"
-    time_decay = "Time Decay"
-    u_shaped = "U-Shaped"
-    w_shaped = "W-Shaped"
+from pydantic import BaseModel
 
 class MarketingMetricBase(BaseModel):
     name: str
@@ -52,8 +24,8 @@ class MarketingMetric(MarketingMetricBase):
 class ReportBase(BaseModel):
     name: str
     description: Optional[str] = None
-    report_type: ReportType
-    frequency: ReportFrequency
+    report_type: str
+    frequency: str
     is_active: bool = True
     filters: Dict[str, Any] = {}  # JSON structure for report filters
     recipients: List[str] = []  # Email addresses
@@ -109,7 +81,7 @@ class ConversionTracking(ConversionTrackingBase):
 
 class AttributionModelBase(BaseModel):
     name: str
-    model_type: AttributionModel
+    model_type: str
     description: Optional[str] = None
     is_default: bool = False
     settings: Dict[str, Any] = {}  # JSON structure for model settings

@@ -1,18 +1,28 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-# Import enums from the shared enums file
-from app.models.enums import ReportType, ReportStatus
 
 class ReportBase(BaseModel):
     title: str
     description: Optional[str] = None
-    report_type: ReportType
-    status: ReportStatus = ReportStatus.draft
+    report_type: str
+    status: str = "Draft"
     generated_by: Optional[str] = None
     filters: Optional[Dict[str, Any]] = None
     data: Optional[Dict[str, Any]] = None
     notes: Optional[str] = None
+
+    @validator('report_type')
+    def validate_report_type(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
+
+    @validator('status')
+    def validate_status(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class ReportCreate(ReportBase):
     pass

@@ -1,41 +1,13 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class ContentStatus(str, Enum):
-    draft = "Draft"
-    review = "Review"
-    approved = "Approved"
-    published = "Published"
-    archived = "Archived"
-
-class ContentType(str, Enum):
-    blog_post = "Blog Post"
-    video = "Video"
-    image = "Image"
-    infographic = "Infographic"
-    ebook = "eBook"
-    whitepaper = "Whitepaper"
-    case_study = "Case Study"
-    webinar = "Webinar"
-    podcast = "Podcast"
-    other = "Other"
-
-class ContentCategory(str, Enum):
-    educational = "Educational"
-    promotional = "Promotional"
-    news = "News"
-    thought_leadership = "Thought Leadership"
-    customer_story = "Customer Story"
-    other = "Other"
 
 class ContentAssetBase(BaseModel):
     title: str
     description: Optional[str] = None
-    content_type: ContentType
-    category: ContentCategory
-    status: ContentStatus = ContentStatus.draft
+    content_type: str
+    category: str
+    status: str = "Draft"
     tags: List[str] = []
     file_url: Optional[str] = None
     thumbnail_url: Optional[str] = None
@@ -79,7 +51,7 @@ class BlogPostBase(BaseModel):
     slug: str
     content: str
     excerpt: Optional[str] = None
-    status: ContentStatus = ContentStatus.draft
+    status: str = "Draft"
     featured_image_url: Optional[str] = None
     tags: List[str] = []
     author: Optional[str] = None

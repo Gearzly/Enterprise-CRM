@@ -1,5 +1,9 @@
-import json
+"""
+Module for retrieving marketing configuration from the super admin service.
+"""
+
 import httpx
+import json
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 

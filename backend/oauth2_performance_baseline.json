@@ -1,0 +1,104 @@
+{
+  "timestamp": "2025-09-24T04:44:09.340829",
+  "server_url": "http://localhost:5173",
+  "performance_data": {
+    "/health": {
+      "total_requests": 100,
+      "successful_requests": 99,
+      "success_rate": 99.0,
+      "response_times": {
+        "average_ms": 421.1,
+        "median_ms": 22.66,
+        "min_ms": 11.57,
+        "max_ms": 33899.69,
+        "p95_ms": 152.9,
+        "p99_ms": 33899.69
+      },
+      "throughput_rps": 2.37
+    },
+    "/auth/challenge": {
+      "total_requests": 100,
+      "successful_requests": 100,
+      "success_rate": 100.0,
+      "response_times": {
+        "average_ms": 11.04,
+        "median_ms": 10.64,
+        "min_ms": 5.64,
+        "max_ms": 29.78,
+        "p95_ms": 17.3,
+        "p99_ms": 29.78
+      },
+      "throughput_rps": 90.57
+    },
+    "/auth/.well-known/oauth-authorization-server": {
+      "total_requests": 50,
+      "successful_requests": 50,
+      "success_rate": 100.0,
+      "response_times": {
+        "average_ms": 7.07,
+        "median_ms": 6.92,
+        "min_ms": 5.02,
+        "max_ms": 9.82,
+        "p95_ms": 9.31,
+        "p99_ms": 9.82
+      },
+      "throughput_rps": 141.46
+    },
+    "/": {
+      "total_requests": 50,
+      "successful_requests": 50,
+      "success_rate": 100.0,
+      "response_times": {
+        "average_ms": 8.51,
+        "median_ms": 7.87,
+        "min_ms": 5.65,
+        "max_ms": 13.44,
+        "p95_ms": 12.88,
+        "p99_ms": 13.44
+      },
+      "throughput_rps": 117.49
+    },
+    "/auth/challenge_concurrent": {
+      "concurrent_users": 20,
+      "requests_per_user": 5,
+      "total_requests": 100,
+      "successful_requests": 100,
+      "success_rate": 100.0,
+      "avg_response_time_ms": 908.44,
+      "max_response_time_ms": 2637.74
+    },
+    "/docs": {
+      "total_requests": 20,
+      "successful_requests": 20,
+      "success_rate": 100.0,
+      "response_times": {
+        "average_ms": 10.84,
+        "median_ms": 10.86,
+        "min_ms": 8.75,
+        "max_ms": 13.0,
+        "p95_ms": 13.0,
+        "p99_ms": 13.0
+      },
+      "throughput_rps": 92.29
+    },
+    "/openapi.json": {
+      "total_requests": 20,
+      "successful_requests": 20,
+      "success_rate": 100.0,
+      "response_times": {
+        "average_ms": 72.47,
+        "median_ms": 68.03,
+        "min_ms": 61.44,
+        "max_ms": 92.47,
+        "p95_ms": 92.47,
+        "p99_ms": 92.47
+      },
+      "throughput_rps": 13.8
+    }
+  },
+  "test_configuration": {
+    "single_endpoint_iterations": 50,
+    "concurrent_users": 20,
+    "requests_per_user": 5
+  }
+}

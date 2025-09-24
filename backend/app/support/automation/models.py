@@ -1,39 +1,18 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class AutomationType(str, Enum):
-    ticket_routing = "Ticket Routing"
-    auto_response = "Auto Response"
-    escalation = "Escalation"
-    follow_up = "Follow Up"
-    notification = "Notification"
-
-class AutomationStatus(str, Enum):
-    active = "Active"
-    inactive = "Inactive"
-    paused = "Paused"
-
-class TriggerType(str, Enum):
-    ticket_created = "Ticket Created"
-    ticket_updated = "Ticket Updated"
-    ticket_status_changed = "Ticket Status Changed"
-    ticket_priority_changed = "Ticket Priority Changed"
-    time_based = "Time Based"
-
-class ActionType(str, Enum):
-    assign_ticket = "Assign Ticket"
-    send_email = "Send Email"
-    send_notification = "Send Notification"
-    update_ticket = "Update Ticket"
-    create_task = "Create Task"
+# Removed AutomationType enum
+# Removed AutomationStatus enum
+# Removed TriggerType enum
+# Removed ActionType enum
 
 class AutomationRuleBase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: AutomationType
-    trigger_type: TriggerType
+    type: str  # Changed from AutomationType to str
+    trigger_type: str  # Changed from TriggerType to str
     conditions: Dict[str, Any] = {}
     actions: List[Dict[str, Any]] = []
     is_active: bool = True
@@ -47,7 +26,7 @@ class AutomationRuleUpdate(AutomationRuleBase):
 
 class AutomationRule(AutomationRuleBase):
     id: int
-    status: AutomationStatus = AutomationStatus.active
+    status: str = "Active"  # Changed from AutomationStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     last_triggered_at: Optional[datetime] = None

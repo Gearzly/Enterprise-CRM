@@ -1,14 +1,17 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, select
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status as fastapi_status
+from datetime import datetime, timedelta
 from app.core.crud.base import CRUDBase
 from app.models.sales import Lead
-from app.sales.lead.models import LeadCreate, LeadUpdate
-from datetime import datetime, timedelta
 
-class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
+# Use TYPE_CHECKING to avoid circular imports at runtime
+if TYPE_CHECKING:
+    from app.sales.lead.models import LeadCreate, LeadUpdate
+
+class CRUDLead(CRUDBase[Lead, 'LeadCreate', 'LeadUpdate']):
     def get_by_name(self, db: Session, *, name: str) -> Optional[Lead]:
         try:
             stmt = select(Lead).where(Lead.name == name)
@@ -16,7 +19,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching lead by name: {str(e)}"
             )
 
@@ -27,7 +30,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching leads by company: {str(e)}"
             )
 
@@ -38,7 +41,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching leads by status: {str(e)}"
             )
 
@@ -49,7 +52,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching leads by source: {str(e)}"
             )
 
@@ -60,7 +63,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching leads by assignee: {str(e)}"
             )
 
@@ -75,7 +78,7 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching leads by value range: {str(e)}"
             )
 
@@ -87,8 +90,9 @@ class CRUDLead(CRUDBase[Lead, LeadCreate, LeadUpdate]):
             return list(result.scalars().all())
         except SQLAlchemyError as e:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status_code=fastapi_status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching recent leads: {str(e)}"
             )
 
+# Create instance without importing the models to avoid circular import
 lead = CRUDLead(Lead)

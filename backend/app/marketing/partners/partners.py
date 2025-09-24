@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     Partner, PartnerCreate, PartnerUpdate,
     Referral, ReferralCreate, ReferralUpdate,
@@ -84,14 +83,14 @@ def get_partners_by_status(status: str):
     """Get partners by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [partner for partner in partners_db if partner.status.value == normalized_status]
+    return [partner for partner in partners_db if partner.status == normalized_status]
 
 @router.get("/partners/type/{partner_type}", response_model=List[Partner])
 def get_partners_by_type(partner_type: str):
     """Get partners by type"""
     # Normalize the partner_type parameter to handle case differences
     normalized_type = partner_type.lower().title()
-    return [partner for partner in partners_db if partner.partner_type.value == normalized_type]
+    return [partner for partner in partners_db if partner.partner_type == normalized_type]
 
 @router.post("/partners/{partner_id}/activate")
 def activate_partner(partner_id: int):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
@@ -15,7 +15,7 @@ from .config import (
     get_max_tags_per_post, get_reputation_threshold_expert
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/community", tags=["community"])
 
 # In-memory storage for demo purposes
 community_categories_db = []
@@ -23,6 +23,20 @@ community_posts_db = []
 community_comments_db = []
 community_users_db = []
 community_badges_db = []
+
+@router.get("/")
+def get_community_dashboard():
+    """Get community dashboard with summary statistics"""
+    return {
+        "message": "Support Community Dashboard",
+        "statistics": {
+            "total_categories": len(community_categories_db),
+            "total_posts": len(community_posts_db),
+            "total_comments": len(community_comments_db),
+            "community_users": len(community_users_db),
+            "badges_awarded": len(community_badges_db)
+        }
+    }
 
 @router.get("/categories", response_model=List[CommunityCategory])
 def list_community_categories():
@@ -170,19 +184,19 @@ def get_posts_by_author(author_id: int):
     """Get community posts by author"""
     return [post for post in community_posts_db if post.author_id == author_id]
 
-@router.get("/posts/type/{post_type}", response_model=List[CommunityPost])
-def get_posts_by_type(post_type: str):
+@router.get("/posts/type/{type}", response_model=List[CommunityPost])
+def get_community_posts_by_type(type: str):
     """Get community posts by type"""
     # Normalize the type parameter to handle case differences
-    normalized_type = post_type.lower().title()
-    return [post for post in community_posts_db if post.post_type.value == normalized_type]
+    normalized_type = type.lower().title()
+    return [post for post in community_posts_db if post.post_type == normalized_type]
 
 @router.get("/posts/status/{status}", response_model=List[CommunityPost])
-def get_posts_by_status(status: str):
+def get_community_posts_by_status(status: str):
     """Get community posts by status"""
     # Normalize the status parameter to handle case differences
     normalized_status = status.lower().title()
-    return [post for post in community_posts_db if post.status.value == normalized_status]
+    return [post for post in community_posts_db if post.status == normalized_status]
 
 @router.post("/posts/{post_id}/like")
 def like_community_post(post_id: int):

@@ -1,11 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Float, Boolean, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Text, DateTime, Float, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional
 from datetime import datetime
 from app.core.database import Base
-# Import enums from the shared enums file to avoid circular imports
-from app.models.enums import LeadStatus, LeadSource, OpportunityStage, QuotationStatus, ContactType, ActivityType, ActivityStatus, TargetPeriod, TargetType, ReportType, ReportStatus
 
 class Lead(Base):
     __tablename__ = "leads"
@@ -15,8 +13,8 @@ class Lead(Base):
     company = Column(String, index=True)
     email = Column(String, nullable=True)
     phone = Column(String, nullable=True)
-    status = Column(Enum(LeadStatus), default=LeadStatus.new)
-    source = Column(Enum(LeadSource), default=LeadSource.website)
+    status = Column(String, default="New")
+    source = Column(String, default="Website")
     assigned_to = Column(String, nullable=True)
     value = Column(Float, nullable=True)
     notes = Column(Text, nullable=True)
@@ -39,7 +37,7 @@ class Contact(Base):
     state = Column(String, nullable=True)
     country = Column(String, nullable=True)
     postal_code = Column(String, nullable=True)
-    contact_type = Column(Enum(ContactType), default=ContactType.primary)
+    contact_type = Column(String, default="Primary")
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -51,7 +49,7 @@ class Opportunity(Base):
     name = Column(String, index=True)
     description = Column(Text, nullable=True)
     value = Column(Float)
-    stage = Column(Enum(OpportunityStage), default=OpportunityStage.prospecting)
+    stage = Column(String, default="Prospecting")
     probability = Column(Integer, default=0)  # Percentage
     close_date = Column(DateTime(timezone=True), nullable=True)
     account_id = Column(Integer)
@@ -73,7 +71,7 @@ class Quotation(Base):
     amount = Column(Float)
     tax_amount = Column(Float, default=0.0)
     total_amount = Column(Float)
-    status = Column(Enum(QuotationStatus), default=QuotationStatus.draft)
+    status = Column(String, default="Draft")
     valid_until = Column(DateTime(timezone=True))
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -85,8 +83,8 @@ class Activity(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(Text, nullable=True)
-    activity_type = Column(Enum(ActivityType))
-    status = Column(Enum(ActivityStatus), default=ActivityStatus.pending)
+    activity_type = Column(String)
+    status = Column(String, default="Pending")
     start_time = Column(DateTime(timezone=True), nullable=True)
     end_time = Column(DateTime(timezone=True), nullable=True)
     related_to = Column(String, nullable=True)  # Could be lead, contact, opportunity, etc.
@@ -102,8 +100,8 @@ class Target(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
     description = Column(Text, nullable=True)
-    target_type = Column(Enum(TargetType))
-    period = Column(Enum(TargetPeriod))
+    target_type = Column(String)
+    period = Column(String)
     year = Column(Integer)
     target_value = Column(Float)
     assigned_to = Column(String, nullable=True)
@@ -117,8 +115,8 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
     description = Column(Text, nullable=True)
-    report_type = Column(Enum(ReportType))
-    status = Column(Enum(ReportStatus), default=ReportStatus.draft)
+    report_type = Column(String)
+    status = Column(String, default="Draft")
     generated_by = Column(String, nullable=True)
     filters = Column(Text, nullable=True)  # JSON string
     data = Column(Text, nullable=True)  # JSON string

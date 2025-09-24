@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
 from .models import (
     Audience, AudienceCreate, AudienceUpdate,
     SegmentCriteria, SegmentCriteriaCreate, SegmentCriteriaUpdate,
@@ -82,7 +81,7 @@ def get_audiences_by_type(segment_type: str):
     """Get audiences by segment type"""
     # Normalize the segment_type parameter to handle case differences
     normalized_type = segment_type.lower().title()
-    return [audience for audience in audiences_db if audience.segment_type.value == normalized_type]
+    return [audience for audience in audiences_db if audience.segment_type == normalized_type]
 
 @router.post("/audiences/{audience_id}/refresh")
 def refresh_audience(audience_id: int):

@@ -1,34 +1,17 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class IntegrationType(str, Enum):
-    crm = "CRM"
-    ecommerce = "E-commerce"
-    productivity = "Productivity"
-    custom = "Custom"
-
-class IntegrationStatus(str, Enum):
-    active = "Active"
-    inactive = "Inactive"
-    error = "Error"
-    pending = "Pending"
-
-class IntegrationPlatform(str, Enum):
-    salesforce = "Salesforce"
-    hubspot = "HubSpot"
-    shopify = "Shopify"
-    woocommerce = "WooCommerce"
-    slack = "Slack"
-    microsoft_teams = "Microsoft Teams"
-    custom = "Custom"
+# Removed IntegrationType enum
+# Removed IntegrationStatus enum
+# Removed IntegrationPlatform enum
 
 class IntegrationBase(BaseModel):
     name: str
     description: Optional[str] = None
-    type: IntegrationType
-    platform: IntegrationPlatform
+    type: str  # Changed from IntegrationType to str
+    platform: str  # Changed from IntegrationPlatform to str
     api_key: Optional[str] = None
     api_secret: Optional[str] = None
     webhook_url: Optional[str] = None
@@ -42,7 +25,7 @@ class IntegrationUpdate(IntegrationBase):
 
 class Integration(IntegrationBase):
     id: int
-    status: IntegrationStatus = IntegrationStatus.pending
+    status: str = "Pending"  # Changed from IntegrationStatus to str
     created_at: datetime
     updated_at: Optional[datetime] = None
     last_sync_at: Optional[datetime] = None

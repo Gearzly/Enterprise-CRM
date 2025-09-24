@@ -1,36 +1,34 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
-
-class TicketPriority(str, Enum):
-    low = "Low"
-    medium = "Medium"
-    high = "High"
-    urgent = "Urgent"
-
-class TicketStatus(str, Enum):
-    new = "New"
-    in_progress = "In Progress"
-    resolved = "Resolved"
-    closed = "Closed"
-    reopened = "Reopened"
-
-class TicketChannel(str, Enum):
-    email = "Email"
-    web = "Web"
-    phone = "Phone"
-    chat = "Chat"
 
 class TicketBase(BaseModel):
     subject: str
     description: Optional[str] = None
-    priority: TicketPriority = TicketPriority.medium
-    status: TicketStatus = TicketStatus.new
-    channel: TicketChannel = TicketChannel.web
+    priority: str = "Medium"
+    status: str = "New"
+    channel: str = "Web"
     assigned_to: Optional[str] = None
     customer_id: int
     tags: List[str] = []
+
+    @validator('priority')
+    def validate_priority(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
+
+    @validator('status')
+    def validate_status(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
+
+    @validator('channel')
+    def validate_channel(cls, v):
+        # In a real implementation, this would fetch from config
+        # For now, we'll allow any string but validate against known values in the service layer
+        return v
 
 class TicketCreate(TicketBase):
     pass

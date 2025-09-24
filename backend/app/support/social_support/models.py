@@ -1,33 +1,18 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from enum import Enum
+# Removed Enum import since we're removing static enums
 
-class SocialPlatform(str, Enum):
-    facebook = "Facebook"
-    twitter = "Twitter"
-    instagram = "Instagram"
-    linkedin = "LinkedIn"
-    youtube = "YouTube"
-    tiktok = "TikTok"
-
-class SocialPostStatus(str, Enum):
-    pending = "Pending"
-    published = "Published"
-    scheduled = "Scheduled"
-    failed = "Failed"
-
-class SocialSentiment(str, Enum):
-    positive = "Positive"
-    neutral = "Neutral"
-    negative = "Negative"
+# Removed SocialPlatform enum
+# Removed SocialPostStatus enum
+# Removed SocialSentiment enum
 
 class SocialInquiryBase(BaseModel):
     customer_id: int
-    platform: SocialPlatform
+    platform: str  # Changed from SocialPlatform to str
     post_id: str
     content: str
-    sentiment: SocialSentiment = SocialSentiment.neutral
+    sentiment: str = "Neutral"  # Changed from SocialSentiment to str
     assigned_agent_id: Optional[str] = None
     tags: List[str] = []
 
@@ -60,7 +45,7 @@ class SocialResponse(SocialResponseBase):
 class SocialTemplateBase(BaseModel):
     name: str
     content: str
-    platform: SocialPlatform
+    platform: str  # Changed from SocialPlatform to str
     is_active: bool = True
 
 class SocialTemplateCreate(SocialTemplateBase):

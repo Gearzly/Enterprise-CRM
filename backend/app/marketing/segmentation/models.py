@@ -1,24 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-from enum import Enum
-
-class SegmentType(str, Enum):
-    dynamic = "Dynamic"
-    static = "Static"
-    account_based = "Account-Based"
-
-class SegmentCriteriaType(str, Enum):
-    demographic = "Demographic"
-    behavioral = "Behavioral"
-    firmographic = "Firmographic"
-    technographic = "Technographic"
-    custom = "Custom"
 
 class AudienceBase(BaseModel):
     name: str
     description: Optional[str] = None
-    segment_type: SegmentType
+    segment_type: str
     criteria: Dict[str, Any]  # JSON structure for segment criteria
     is_active: bool = True
     tags: List[str] = []
@@ -37,7 +24,7 @@ class Audience(AudienceBase):
 
 class SegmentCriteriaBase(BaseModel):
     audience_id: int
-    criteria_type: SegmentCriteriaType
+    criteria_type: str
     field_name: str
     operator: str  # e.g., "equals", "contains", "greater_than"
     value: str
