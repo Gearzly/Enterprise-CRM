@@ -14,39 +14,62 @@ from .config import (
 )
 from app.core.deps import get_db
 from app.core.crud import sla as crud_sla
+from app.core.utils import (
+    comprehensive_error_handler, 
+    log_api_call, 
+    ensure_resource_exists,
+    ErrorContext
+)
+from app.core.logging_config import get_logger
+
+# Get module-specific logger
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/sla", tags=["sla"])
 
 @router.get("/")
+@log_api_call
+@comprehensive_error_handler(include_database=True)
 def get_sla_dashboard(db: Session = Depends(get_db)):
     """Get support SLA dashboard with summary statistics"""
-    all_slas = crud_sla.sla.get_multi(db)
-    all_breaches = crud_sla.sla_breach.get_multi(db)
-    all_notifications = crud_sla.sla_notification.get_multi(db)
-    active_slas = crud_sla.sla.get_active_slas(db)
-    
-    return {
-        "message": "Support SLA Dashboard",
-        "statistics": {
-            "total_slas": len(all_slas),
-            "total_breaches": len(all_breaches),
-            "total_notifications": len(all_notifications),
-            "active_slas": len(active_slas)
+    with ErrorContext("get_sla_dashboard", logger):
+        all_slas = crud_sla.sla.get_multi(db)
+        all_breaches = crud_sla.sla_breach.get_multi(db)
+        all_notifications = crud_sla.sla_notification.get_multi(db)
+        active_slas = crud_sla.sla.get_active_slas(db)
+        
+        logger.info("SLA dashboard data retrieved successfully")
+        
+        return {
+            "message": "Support SLA Dashboard",
+            "statistics": {
+                "total_slas": len(all_slas),
+                "total_breaches": len(all_breaches),
+                "total_notifications": len(all_notifications),
+                "active_slas": len(active_slas)
+            }
         }
-    }
 
 @router.get("/sla", response_model=List[SLA])
+@log_api_call
+@comprehensive_error_handler(include_database=True)
 def list_slas(db: Session = Depends(get_db)):
     """List all SLAs"""
-    return crud_sla.sla.get_multi(db)
+    with ErrorContext("list_slas", logger):
+        slas = crud_sla.sla.get_multi(db)
+        logger.info(f"Retrieved {len(slas)} SLAs")
+        return slas
 
 @router.get("/{sla_id}", response_model=SLA)
+@log_api_call
+@comprehensive_error_handler(include_database=True, include_business_logic=True)
 def get_sla(sla_id: int, db: Session = Depends(get_db)):
     """Get a specific SLA by ID"""
-    sla = crud_sla.sla.get(db=db, id=sla_id)
-    if not sla:
-        raise HTTPException(status_code=404, detail="SLA not found")
-    return sla
+    with ErrorContext(f"get_sla_{sla_id}", logger):
+        sla = crud_sla.sla.get(db=db, id=sla_id)
+        ensure_resource_exists(sla, "SLA", sla_id)
+        logger.info(f"Retrieved SLA {sla_id}: {sla.name}")
+        return sla
 
 @router.post("/", response_model=SLA)
 def create_sla(sla: SLACreate, db: Session = Depends(get_db)):

@@ -83,20 +83,8 @@ async def lifespan(app: FastAPI):
         logger.error(f"❌ Shutdown error: {e}")
 
 
-def configure_logging():
-    """Configure optimized logging"""
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.StreamHandler()
-        ]
-    )
-    
-    # Reduce noise from some loggers
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+# Import comprehensive logging configuration
+from .core.logging_config import configure_logging
 
-
-# Initialize logging when module is imported
+# Initialize comprehensive logging when module is imported
 configure_logging()

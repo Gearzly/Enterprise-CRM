@@ -19,6 +19,7 @@ from app.core.data_classification.routers import classification_router
 from app.core.security.production_routers import production_security_router
 from app.core.auth.oauth2_routes import router as oauth2_router
 from app.core.auth.oauth2_middleware import OAuth2AuthenticationMiddleware, OAuth2AuthorizationMiddleware
+from app.core.middleware.error_handling import ErrorHandlingMiddleware, SecurityErrorMiddleware
 from app.startup_optimizations import lifespan
 
 # Create database tables
@@ -48,6 +49,10 @@ add_security_headers(app)
 
 # Add security middleware
 app.middleware("http")(security_middleware)
+
+# Add comprehensive error handling middleware
+app.add_middleware(ErrorHandlingMiddleware, include_traceback=os.getenv("DEBUG", "false").lower() == "true")
+app.add_middleware(SecurityErrorMiddleware)
 
 # Add OAuth 2.0 authentication and authorization middleware
 app.add_middleware(OAuth2AuthenticationMiddleware)
