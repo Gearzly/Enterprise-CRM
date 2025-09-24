@@ -198,7 +198,7 @@ class TestInputSanitizationIntegration:
         malicious_payload = {
             "name": "<script>alert('xss')</script>",
             "description": "javascript:alert('xss')",
-            "email": "test@example.com"
+            "email": "test@crm.com"
         }
         
         # Try to submit malicious payload to various endpoints
@@ -327,7 +327,7 @@ class TestDatabaseIntegration:
         test_data = {
             "name": "Integration Test Lead",
             "company": "Test Company",
-            "email": "test@example.com",
+            "email": "test@crm.com",
             "status": "New",
             "source": "API Test"
         }

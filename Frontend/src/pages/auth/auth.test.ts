@@ -46,7 +46,7 @@ test.describe('Authentication Pages', () => {
     await page.goto('/auth/login');
     
     // Fill in the form
-    await page.getByLabel('Email').fill('test@example.com');
+    await page.getByLabel('Email').fill('test@crm.com');
     await page.getByLabel('Password').fill('password123');
     
     // Submit the form
@@ -54,7 +54,7 @@ test.describe('Authentication Pages', () => {
     
     // Check that form submission works (this would depend on your backend implementation)
     // For now, we just check that the form fields are filled
-    await expect(page.getByLabel('Email')).toHaveValue('test@example.com');
+    await expect(page.getByLabel('Email')).toHaveValue('test@crm.com');
   });
 
   test('Signup form submission', async ({ page }) => {
@@ -78,7 +78,7 @@ test.describe('Authentication Pages', () => {
     await page.goto('/auth/forgot-password');
     
     // Fill in the form
-    await page.getByLabel('Email').fill('test@example.com');
+    await page.getByLabel('Email').fill('test@crm.com');
     
     // Submit the form
     await page.getByRole('button', { name: 'Send Reset Link' }).click();

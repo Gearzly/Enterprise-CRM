@@ -126,7 +126,7 @@ async def get_oauth2_token(request: TokenRequest) -> Dict[str, Any]:
             )
         
         # Simple authentication for test user
-        if request.username != "test@example.com":
+        if request.username != "test@crm.com":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials"

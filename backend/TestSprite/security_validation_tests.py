@@ -403,7 +403,7 @@ class SecurityValidationTester:
                 f"{self.base_url}/auth/token",
                 data={
                     "grant_type": "password",
-                    "username": "test@example.com",
+                    "username": "test@crm.com",
                     "password": "password",
                     "client_id": "crm_web_app"
                 }

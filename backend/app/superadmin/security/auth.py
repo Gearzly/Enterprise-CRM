@@ -89,8 +89,9 @@ async def issue_token(form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[
         username = form_data.username
         password = form_data.password
 
-        # Minimal demo authentication to satisfy tests
-        if not (username == "testuser@example.com" and password == "testpassword123"):
+        # Authenticate user using the user service
+        user = user_service.authenticate_user(username, password)
+        if not user:
             # Return Unauthorized for invalid credentials
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 

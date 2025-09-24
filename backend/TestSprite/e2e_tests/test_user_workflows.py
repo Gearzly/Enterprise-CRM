@@ -45,8 +45,8 @@ class TestUserAuthenticationWorkflow:
         """Setup test client"""
         self.client = TestClient(app)
         self.test_user = {
-            "username": "testuser@example.com",
-            "password": "testpassword123"
+            "username": "test@crm.com",
+            "password": "TestPassword123!"
         }
         
     def test_complete_authentication_flow(self):
@@ -517,7 +517,7 @@ class TestPerformanceWorkflow:
             ("GET", "/api/sales/leads"),
             ("POST", "/api/marketing/campaigns", {"name": "Test Campaign", "budget": 1000}),
             ("GET", "/api/marketing/campaigns"),
-            ("POST", "/api/support/tickets", {"subject": "Test Ticket", "customer_email": "test@example.com"}),
+            ("POST", "/api/support/tickets", {"subject": "Test Ticket", "customer_email": "test@crm.com"}),
             ("GET", "/api/support/tickets")
         ]
         
@@ -615,8 +615,8 @@ class TestErrorRecoveryWorkflow:
         auth_response = self.client.post(
             "/api/superadmin/security/auth/token",
             data={
-                "username": "test@example.com",
-                "password": "testpassword"
+                "username": "test@crm.com",
+            "password": "TestPassword123!"
             }
         )
         

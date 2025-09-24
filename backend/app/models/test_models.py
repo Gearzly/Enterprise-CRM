@@ -79,7 +79,7 @@ class TestModelsDynamicDefaults(unittest.TestCase):
         mock_get_support_default.return_value = 'Medium'
         
         # Create a ticket without specifying priority, status, and channel
-        ticket = Ticket(subject="Test Ticket", description="Test Description", customer_id=1, customer_email="test@example.com")
+        ticket = Ticket(subject="Test Ticket", description="Test Description", customer_id=1, customer_email="test@crm.com")
         self.session.add(ticket)
         self.session.commit()
         

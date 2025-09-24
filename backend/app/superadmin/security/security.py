@@ -57,16 +57,8 @@ policies_db = [
 ]
 
 users_db = [
-    User(
-        id=1,
-        organization_id=1,
-        email="admin@acme.com",
-        first_name="Admin",
-        last_name="User",
-        status="active",
-        roles=[roles_db[0]],
-        created_at=datetime.now()
-    )
+    # Users will be managed through the user service
+    # No hardcoded demo users here
 ]
 
 # Role Management Endpoints

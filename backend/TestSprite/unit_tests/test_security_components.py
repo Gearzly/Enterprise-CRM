@@ -97,7 +97,7 @@ class TestInputSanitization(unittest.TestCase):
         """Test email validation"""
         # Valid emails
         valid_emails = [
-            "test@example.com",
+            "test@crm.com",
             "user.name@domain.co.uk",
             "test+tag@example.org"
         ]
@@ -166,8 +166,8 @@ class TestInputSanitization(unittest.TestCase):
         self.assertNotIn("<script>", sanitized)
         
         # Email sanitization
-        sanitized = SanitizedStr("TEST@EXAMPLE.COM", SanitizationType.EMAIL)
-        self.assertEqual(sanitized, "test@example.com")
+        sanitized = SanitizedStr("TEST@CRM.COM", SanitizationType.EMAIL)
+        self.assertEqual(sanitized, "test@crm.com")
 
 
 class TestRateLimiting(unittest.TestCase):

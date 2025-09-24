@@ -118,7 +118,7 @@ async def simple_login(request: LoginRequest) -> Dict[str, Any]:
     try:
         # Demo account validation
         demo_accounts = {
-            "admin@demo.com": {"role": "administrator", "name": "Administrator User"},
+            "admin@crm.com": {"role": "administrator", "name": "Administrator User"},
             "sales.manager@demo.com": {"role": "sales_manager", "name": "Sales Manager"},
             "sales.rep@demo.com": {"role": "sales_rep", "name": "Sales Representative"}
         }
@@ -191,7 +191,7 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         # In production, this would validate the Bearer token
         return {
             "id": "1",
-            "email": "admin@demo.com",
+            "email": "admin@crm.com",
             "name": "Administrator User",
             "role": "administrator",
             "permissions": ["read", "write", "admin"]
@@ -218,7 +218,7 @@ async def get_oauth2_token(request: TokenRequest) -> Dict[str, Any]:
             )
         
         # Simple authentication for test user
-        if request.username != "test@example.com":
+        if request.username != "test@crm.com":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid credentials"
@@ -274,7 +274,7 @@ async def refresh_token(request: TokenRefreshRequest) -> Dict[str, Any]:
         # For demo purposes, generate new tokens
         access_token = oauth2_manager._generate_access_token(
             client_id=request.client_id,
-            user_id="test@example.com",
+            user_id="test@crm.com",
             scope=["read", "write"]
         )
         
@@ -338,7 +338,7 @@ async def get_user_info(request: Request) -> Dict[str, Any]:
         # Simple user info for demo
         return {
             "sub": "1",
-            "email": "test@example.com",
+            "email": "test@crm.com",
             "name": "Test User",
             "role": "user",
             "status": "active",

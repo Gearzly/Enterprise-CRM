@@ -32,8 +32,8 @@ class TestConfig:
     base_url: str = "http://localhost:5173"
     timeout: int = 30
     oauth2_client_id: str = "crm_web_app"
-    test_user_email: str = "test@example.com"
-    test_user_password: str = "test_password_123"
+    test_user_email: str = "test@crm.com"
+test_user_password: str = "TestPassword123!"
 
 @dataclass
 class TestResult:

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { RoleSelector } from './components/RoleSelector';
 import { SalesRepDashboard } from './components/dashboards/SalesRepDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
 import { AdminDashboard } from './components/dashboards/AdminDashboard';
@@ -55,15 +54,10 @@ import { CreateTicketPage } from './pages/support/CreateTicketPage';
 import { CreateKnowledgeArticlePage } from './pages/support/CreateKnowledgeArticlePage';
 
 export default function App() {
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedRole, setSelectedRole] = useState<string>('Admin'); // Default role set to Admin
   const [editId, setEditId] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleRoleSelect = (role: string) => {
-    setSelectedRole(role);
-    setCurrentView('dashboard');
-  };
 
   const handleViewChange = (view: string, id?: string) => {
     setCurrentView(view);
@@ -72,11 +66,11 @@ export default function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
+    setCurrentView('dashboard'); // Redirect directly to dashboard
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setSelectedRole(null);
     setCurrentView('dashboard');
   };
 
@@ -91,11 +85,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/auth/login" replace />} />
       </Routes>
     );
-  }
-
-  // Role selection screen
-  if (!selectedRole) {
-    return <RoleSelector onRoleSelect={handleRoleSelect} />;
   }
 
   const renderContent = () => {

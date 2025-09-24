@@ -98,8 +98,8 @@ class OAuth2TestSuite:
         try:
             token_data = {
                 "grant_type": "password",
-                "username": "test@example.com",
-                "password": "testpassword",
+                "username": "test@crm.com",
+        "password": "TestPassword123!",
                 "client_id": "crm_web_app",
                 "scope": "read write"
             }
