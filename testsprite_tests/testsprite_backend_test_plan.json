@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "test_list_all_leads_endpoint",
+    "description": "Verify that the GET /sales/leads endpoint returns a list of all leads with a 200 status code and correct data structure."
+  },
+  {
+    "id": "TC002",
+    "title": "test_create_new_lead_endpoint",
+    "description": "Verify that the POST /sales/leads endpoint successfully creates a new lead and returns a 201 status code with confirmation."
+  },
+  {
+    "id": "TC003",
+    "title": "test_list_all_campaigns_endpoint",
+    "description": "Verify that the GET /marketing/campaigns endpoint returns a list of all marketing campaigns with a 200 status code and correct data structure."
+  },
+  {
+    "id": "TC004",
+    "title": "test_create_new_campaign_endpoint",
+    "description": "Verify that the POST /marketing/campaigns endpoint successfully creates a new marketing campaign and returns a 201 status code with confirmation."
+  },
+  {
+    "id": "TC005",
+    "title": "test_list_all_support_tickets_endpoint",
+    "description": "Verify that the GET /support/tickets endpoint returns a list of all support tickets with a 200 status code and correct data structure."
+  },
+  {
+    "id": "TC006",
+    "title": "test_create_new_support_ticket_endpoint",
+    "description": "Verify that the POST /support/tickets endpoint successfully creates a new support ticket and returns a 201 status code with confirmation."
+  },
+  {
+    "id": "TC007",
+    "title": "test_list_all_organizations_endpoint",
+    "description": "Verify that the GET /api/superadmin/organizations endpoint returns a list of all organizations with a 200 status code and correct data structure."
+  },
+  {
+    "id": "TC008",
+    "title": "test_create_new_organization_endpoint",
+    "description": "Verify that the POST /api/superadmin/organizations endpoint successfully creates a new organization and returns a 201 status code with confirmation."
+  },
+  {
+    "id": "TC009",
+    "title": "test_user_login_endpoint",
+    "description": "Verify that the POST /auth/login endpoint authenticates users with valid credentials and returns a 200 status code and token, and rejects invalid credentials with a 401 status code."
+  },
+  {
+    "id": "TC010",
+    "title": "test_user_logout_endpoint",
+    "description": "Verify that the POST /auth/logout endpoint successfully logs out the user and returns a 200 status code confirming logout."
+  }
+]

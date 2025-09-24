@@ -1,0 +1,18 @@
+{
+  "status": "init",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "CRM",
+    "projectPath": "d:\\CRM",
+    "testIds": [],
+    "additionalInstruction": "Run comprehensive test suite with iterative fixing. Execute all unit tests, integration tests, and end-to-end tests. Achieve 100% pass rate through parallel fixing and re-running of tests. Focus on security validation, database operations, API endpoints, and complete user workflows. Generate detailed reports for all test categories.",
+    "envs": {
+      "API_KEY": "sk-user-mbnB99To4pksulpUJkhDkWGvcLmdCLS7UOiL_52cVtwvLOYh8u5X6RaVH87BO6KRcsbCR3LFQk_zLuPMacXevCE3cwNvDDqEJeBOYP_dnViP31l1RgTM7NdB8ap9wnb165E"
+    }
+  },
+  "proxy": "http://95f7ff4f-bf50-49cc-a1aa-f2f46a55850d:nG0ZLGngVFCf6QrDSN9bX4s4WJsBvFTK@tun.testsprite.com:8080",
+  "serverPort": 63392
+}
