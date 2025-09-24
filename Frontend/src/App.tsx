@@ -28,6 +28,12 @@ import { CreateQuotationPage } from './pages/sales/CreateQuotationPage';
 
 // Marketing Pages  
 import { CampaignsPage } from './pages/marketing/CampaignsPage';
+import { ContentPage } from './pages/marketing/ContentPage';
+import { SegmentationPage } from './pages/marketing/SegmentationPage';
+import { EventsPage } from './pages/marketing/EventsPage';
+import { PartnersPage } from './pages/marketing/PartnersPage';
+import { ResourcesPage } from './pages/marketing/ResourcesPage';
+import { CDPPage } from './pages/marketing/CDPPage';
 import { LeadsPage as MarketingLeadsPage } from './pages/marketing/LeadsPage';
 import { EmailPage } from './pages/marketing/EmailPage';
 import { AnalyticsPage } from './pages/marketing/AnalyticsPage';
@@ -165,6 +171,18 @@ export default function App() {
         // Marketing Pages
         case 'marketing/campaigns':
           return <CampaignsPage />;
+        case 'marketing/content':
+          return <ContentPage />;
+        case 'marketing/segmentation':
+          return <SegmentationPage />;
+        case 'marketing/events':
+          return <EventsPage />;
+        case 'marketing/partners':
+          return <PartnersPage />;
+        case 'marketing/resources':
+          return <ResourcesPage />;
+        case 'marketing/cdp':
+          return <CDPPage />;
         case 'marketing/leads':
           return <MarketingLeadsPage />;
         case 'marketing/email':
