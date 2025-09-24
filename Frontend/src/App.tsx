@@ -5,6 +5,11 @@ import { SalesRepDashboard } from './components/dashboards/SalesRepDashboard';
 import { ManagerDashboard } from './components/dashboards/ManagerDashboard';
 import { AdminDashboard } from './components/dashboards/AdminDashboard';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from './pages/auth/LoginPage';
+import { SignupPage } from './pages/auth/SignupPage';
+import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
+import { DashboardPage } from './pages/DashboardPage';
 
 // Sales Pages
 import { ActivitiesPage } from './pages/sales/ActivitiesPage';
@@ -47,6 +52,7 @@ export default function App() {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState('dashboard');
   const [editId, setEditId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleRoleSelect = (role: string) => {
     setSelectedRole(role);
@@ -57,6 +63,29 @@ export default function App() {
     setCurrentView(view);
     setEditId(id || null);
   };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setSelectedRole(null);
+    setCurrentView('dashboard');
+  };
+
+  // If not authenticated, show auth pages
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/auth/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route path="/auth/signup" element={<SignupPage />} />
+        <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="*" element={<Navigate to="/auth/login" replace />} />
+      </Routes>
+    );
+  }
 
   // Role selection screen
   if (!selectedRole) {

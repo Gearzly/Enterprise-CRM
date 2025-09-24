@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from typing import Optional
 from datetime import datetime
 from app.core.database import Base
+from app.core.config.dynamic_config import get_marketing_default
 
 class Campaign(Base):
     __tablename__ = "marketing_campaigns"
@@ -11,7 +12,7 @@ class Campaign(Base):
     name = Column(String, index=True)
     description = Column(Text, nullable=True)
     type = Column(String)
-    status = Column(String, default="Draft")
+    status = Column(String, default=lambda: get_marketing_default("campaign_status"))
     start_date = Column(DateTime(timezone=True))
     end_date = Column(DateTime(timezone=True), nullable=True)
     budget = Column(Float, nullable=True)
@@ -42,8 +43,8 @@ class Lead(Base):
     company = Column(String, index=True)
     email = Column(String, nullable=True)
     phone = Column(String, nullable=True)
-    status = Column(String, default="New")
-    source = Column(String, default="Website")
+    status = Column(String, default=lambda: get_marketing_default("lead_status"))
+    source = Column(String, default=lambda: get_marketing_default("lead_source"))
     assigned_to = Column(String, nullable=True)
     value = Column(Float, nullable=True)
     score = Column(Integer, default=0)
@@ -143,7 +144,7 @@ class EmailTemplate(Base):
     name = Column(String, index=True)
     subject = Column(String)
     content = Column(Text)  # HTML content
-    category = Column(String, default="Newsletter")
+    category = Column(String, default=lambda: get_marketing_default("email_category"))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
@@ -157,7 +158,7 @@ class EmailCampaign(Base):
     subject = Column(String)
     template_id = Column(Integer)
     list_ids = Column(Text)  # JSON string of list IDs
-    status = Column(String, default="Draft")
+    status = Column(String, default=lambda: get_marketing_default("template_status"))
     scheduled_at = Column(DateTime(timezone=True), nullable=True)
     sent_at = Column(DateTime(timezone=True), nullable=True)
     open_rate = Column(Float, default=0.0)
